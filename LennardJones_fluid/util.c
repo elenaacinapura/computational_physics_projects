@@ -36,7 +36,7 @@ double r_polari(double x, double y, double z) {
 }
 
 double lj_part(double r) {
-	return 24 * (2 * pow(r, -7) - pow(r, -4));
+	return 24 * (2 * pow(r, -14) - pow(r, -8));
 }
 
 double lj_u (double r) {
