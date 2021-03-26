@@ -1,6 +1,7 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
+#include <stdio.h>
 #define N 108   // numero particelle
 
 double x [N][3];
@@ -11,7 +12,7 @@ extern double L, rho, cutoff, T, dt, t, duration;
 
 void print_mat (double m[N][3]);
 
-void print_double (double d, char filepath []);
+void print_double (double d, FILE *f);
 
 double r_polari (double x, double y, double z);
 

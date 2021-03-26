@@ -16,24 +16,33 @@ int main() {
 		}
 	}
 
-	calculate_acc();
+	// open output files
+	FILE *f_energy, *f_traj;
+	f_energy = fopen("Output/energies.csv", "w");
+	f_traj = fopen("Output/trajectory.csv", "w");
 
+	calculate_acc();
 	do {
+		
 		verlet_step();
 
-        print_double(t, "Output/T.csv");
-		print_double(calculate_T(), "Output/T.csv");
-        FILE *outputfile;
-        outputfile = fopen("Output/T.csv", "a");
-        fprintf(outputfile, "\n");
-        fclose(outputfile);
 
-        char file_energies [] = "Output/energies.csv";
-        print_double(t, file_energies);
-        print_double(calculate_U() + calculate_K(), file_energies);
-        outputfile = fopen(file_energies, "a");
-        fprintf(outputfile, "\n");
-        fclose(outputfile);
-
+		// output stuff
+		printf("%lf\n", t);
+		// energy
+		print_double(t, f_energy);
+		print_double(calculate_K(), f_energy);
+		print_double(calculate_U(), f_energy);
+		print_double(calculate_K()+calculate_U(), f_energy);
+		fprintf(f_energy, "\n");
+		// trajectory
+		print_double(t, f_traj);
+		for (int i = 0; i < 3; i++) {	// print coord of particle 100
+			print_double(x[100][i], f_traj);
+		}
+		fprintf(f_traj, "\n");
 	} while (t < duration);
+
+	//close output files
+	fclose(f_energy);
 }

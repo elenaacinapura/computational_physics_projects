@@ -1,5 +1,3 @@
 set datafile separator "\t"
 
-unset key
-
-plot "Output/energies.csv" using 1:2 lc 7 w lines
+plot "Output/energies.csv" using 1:2 w lines title 'Kinetic', "Output/energies.csv" using 1:3 w lines title 'Potential', "Output/energies.csv" using 1:4 w lines title 'Total'
