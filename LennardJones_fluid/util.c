@@ -13,7 +13,7 @@ double cutoff = 3.0;
 double T = 0.7;
 double dt = 0.001;
 double t = 0.0;
-double duration = 10.0;
+double duration = 1.0;
 
 void print_mat(double m[N][3]) {
 	for (int i = 0; i < N; i++) {
