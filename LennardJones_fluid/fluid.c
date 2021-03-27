@@ -6,6 +6,10 @@
 #include "util.h"
 
 int main() {
+
+	// calculate box length
+	double L = pow(N/rho,1/3);
+
 	// set initial positions
 	generate_FCC(N, L, x);
 

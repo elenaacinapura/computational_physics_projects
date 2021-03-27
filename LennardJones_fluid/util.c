@@ -8,12 +8,12 @@ double v[N][3];
 double a[N][3];
 
 double rho = 0.7;
-double L = 10.0;
 double cutoff = 3.0;
 double T = 0.7;
 double dt = 0.001;
 double t = 0.0;
 double duration = 1.0;
+
 
 void print_mat(double m[N][3]) {
 	for (int i = 0; i < N; i++) {
@@ -42,6 +42,7 @@ double lj_u(double r) {
 }
 
 void calculate_acc() {
+	double L = pow(N/rho,1/3);
 	// reset accelerations
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -79,6 +80,7 @@ void calculate_acc() {
 }
 
 void verlet_step() {
+	double L = pow(N/rho,1/3);
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < 3; j++) {
 			v[i][j] += dt / 2.0 * a[i][j];
@@ -94,6 +96,7 @@ void verlet_step() {
 }
 
 double calculate_U() {
+	double L = pow(N/rho,1/3);
 	double U = 0;
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {

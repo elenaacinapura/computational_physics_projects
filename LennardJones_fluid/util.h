@@ -8,7 +8,7 @@ double x [N][3];
 double v [N][3];
 double a [N][3];
 
-extern double L, rho, cutoff, T, dt, t, duration;
+extern double rho, cutoff, T, dt, t, duration;
 
 void print_mat (double m[N][3]);
 
