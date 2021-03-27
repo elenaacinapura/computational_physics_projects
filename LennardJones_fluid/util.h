@@ -22,6 +22,8 @@ double lj_part (double r);
 
 void calculate_acc ();
 
+void calculate_forces();
+
 void verlet_step ();
 
 double calculate_U ();

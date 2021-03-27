@@ -12,7 +12,7 @@ double cutoff = 3.0;
 double T = 0.7;
 double dt = 0.001;
 double t = 0.0;
-double duration = 1.0;
+double duration = 15.0;
 double L;
 
 
@@ -49,7 +49,7 @@ void calculate_acc() {
 			a[i][j] = 0.0;
 		}
 	}
-	// update accelerations ciao
+	// update accelerations
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < i; j++) {
 			// distances
@@ -79,6 +79,35 @@ void calculate_acc() {
 	}
 }
 
+void calculate_forces(){
+	// reset acceleration
+	for(int i=0;i<N;i++){
+		for(int j=0;j<3;j++){
+			a[i][j] = 0.0;
+		}
+	}
+	// update acceleration
+	for(int i=0;i<N;i++){
+		for(int j=i+1;j<N;j++){
+
+			double dx = x[i][0]-x[j][0]; 
+			double dy = x[i][1]-x[j][1];
+			double dz = x[i][2]-x[j][2];
+			dx -= L*rint(dx/L); 
+			dy -= L*rint(dy/L);
+			dz -= L*rint(dz/L);
+
+			double r = r_polari(dx,dy,dz); 
+			if(r<cutoff){
+				double a_part = lj_part(r);
+				a[i][0] += a_part * dx; 
+				a[i][1] += a_part * dy;
+				a[i][2] += a_part * dz;
+			}			
+		}
+	}
+}
+
 void verlet_step() {
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -86,7 +115,7 @@ void verlet_step() {
 			x[i][j] += dt * v[i][j];
 			x[i][j] -= L * rint(x[i][j] / L);  //pacman
 		}
-		calculate_acc();
+		calculate_forces(); //calculate_acc();
 		for (int j = 0; j < 3; j++) {
 			v[i][j] += dt / 2.0 * a[i][j];
 		}
@@ -109,8 +138,9 @@ double calculate_U() {
 			dy -= L * rint(dy / L);
 			dz -= L * rint(dz / L);
 			double r = r_polari(dx, dy, dz);
-
+			if(r<cutoff){
 			U += lj_u(r);
+			}
 		}
 	}
 	return U;
@@ -127,12 +157,7 @@ double calculate_K() {
 }
 
 double calculate_T() {
-	double K_curr = 0;
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < 3; j++) {
-			K_curr += 0.5 * pow(v[i][j], 2);
-		}
-	}
+	double K_curr = calculate_K();
 	double T_curr = 2.0 / (3.0 * N) * K_curr;
 	return T_curr;
 }
