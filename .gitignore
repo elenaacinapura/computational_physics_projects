@@ -51,6 +51,7 @@ modules.order
 # varie
 *.pdf
 *.png
+*.csv
 Module.symvers
 Mkfile.old
 dkms.conf
