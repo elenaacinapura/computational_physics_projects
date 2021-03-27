@@ -49,7 +49,7 @@ void calculate_acc() {
 			a[i][j] = 0.0;
 		}
 	}
-	// update accelerations
+	// update accelerations ciao
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < i; j++) {
 			// distances
