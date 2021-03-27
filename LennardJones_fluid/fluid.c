@@ -8,7 +8,7 @@
 int main() {
 
 	// calculate box length
-	double L = pow(N/rho,1/3);
+	double L = pow(N/rho,1.0/3.0);
 
 	// set initial positions
 	generate_FCC(N, L, x);
@@ -49,4 +49,5 @@ int main() {
 
 	//close output files
 	fclose(f_energy);
+
 }
