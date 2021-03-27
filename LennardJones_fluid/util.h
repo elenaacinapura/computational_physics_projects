@@ -3,10 +3,10 @@
 
 #include <stdio.h>
 #define N 108   // numero particelle
+#define EPS 0.0001
 
-double x [N][3];
-double v [N][3];
-double a [N][3];
+extern double x[N][3], v[N][3], a[N][3];
+extern double dx[N][N][3];
 
 extern double L,rho, cutoff, T, dt, t, duration;
 
@@ -21,6 +21,8 @@ double lj_u (double r);
 double lj_part (double r);
 
 void calculate_acc ();
+
+void calculate_distance();
 
 void calculate_forces();
 

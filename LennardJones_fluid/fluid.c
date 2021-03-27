@@ -20,8 +20,6 @@ int main() {
 		}
 	}
 
-
-
 	// open output files
 	FILE *f_energy, *f_t;
 	f_energy = fopen("Output/energies.csv", "w");
@@ -33,7 +31,7 @@ int main() {
 		verlet_step();
 
 		// energy
-		print_double(t, f_energy);
+		/*print_double(t, f_energy);
 		print_double(calculate_K(), f_energy);
 		print_double(calculate_U(), f_energy);
 		print_double(calculate_K()+calculate_U(), f_energy);
@@ -42,7 +40,7 @@ int main() {
 		// temperature
 		print_double(t, f_t);
 		print_double(calculate_T(),f_t);
-		fprintf(f_t, "\n");
+		fprintf(f_t, "\n");*/
 
 	} while (t < duration);
 
@@ -50,5 +48,4 @@ int main() {
 	fclose(f_energy);
 	fclose(f_t);
 	
-	print_mat(x);
 }

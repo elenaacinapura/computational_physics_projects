@@ -2,17 +2,19 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <assert.h>
 
 double x[N][3];
 double v[N][3];
 double a[N][3];
+double dx[N][N][3];
 
 double rho = 0.7;
 double cutoff = 3.0;
 double T = 0.7;
 double dt = 0.001;
 double t = 0.0;
-double duration = 15.0;
+double duration = 1.0;
 double L;
 
 
@@ -79,6 +81,33 @@ void calculate_acc() {
 	}
 }
 
+void calculate_distance(){
+	for(int i=0;i<N;i++){
+		for(int j=i+1;j<N;j++){
+			dx[i][j][0] = x[i][0]-x[j][0]; 
+			dx[i][j][1] = x[i][1]-x[j][1];
+			dx[i][j][2] = x[i][2]-x[j][2];
+			
+			dx[i][j][0] -= L * rint(dx[i][j][0]/L); 
+			dx[i][j][1] -= L * rint(dx[i][j][1]/L);
+			dx[i][j][2] -= L * rint(dx[i][j][2]/L);
+		}
+	}
+	// si potrebbe fare a meno di questi due cicli
+	/*for(int i=0;i<N;i++){
+		for(int j=0;j<3;j++){
+			dx[i][i][j] = 0.0;
+		}
+	}
+	for(int i=0;i<N;i++){
+		for(int j=0;j<i;j++){
+			dx[i][j][0] = -dx[j][i][0];
+			dx[i][j][1] = -dx[j][i][1];
+			dx[i][j][2] = -dx[j][i][2];
+		}
+	}*/
+}
+
 void calculate_forces(){
 	// reset acceleration
 	for(int i=0;i<N;i++){
@@ -87,22 +116,19 @@ void calculate_forces(){
 		}
 	}
 	// update acceleration
+	calculate_distance();
 	for(int i=0;i<N;i++){
 		for(int j=i+1;j<N;j++){
-
-			double dx = x[i][0]-x[j][0]; 
-			double dy = x[i][1]-x[j][1];
-			double dz = x[i][2]-x[j][2];
-			dx -= L*rint(dx/L); 
-			dy -= L*rint(dy/L);
-			dz -= L*rint(dz/L);
-
-			double r = r_polari(dx,dy,dz); 
+			double r = r_polari(dx[i][j][0],dx[i][j][1],dx[i][j][2]);  printf("%lf\n",r);
 			if(r<cutoff){
 				double a_part = lj_part(r);
-				a[i][0] += a_part * dx; 
-				a[i][1] += a_part * dy;
-				a[i][2] += a_part * dz;
+				a[i][0] += a_part * dx[i][j][0]; 
+				a[i][1] += a_part * dx[i][j][1];
+				a[i][2] += a_part * dx[i][j][2];
+
+				a[j][0] += a_part * (-1) * dx[i][j][0]; // da controllare
+				a[j][1] += a_part * (-1) * dx[i][j][1];
+				a[j][2] += a_part * (-1) * dx[i][j][2];
 			}			
 		}
 	}
@@ -130,15 +156,10 @@ double calculate_U() {
 			if (i == j) {
 				continue;
 			}
-			// distances
-			double dx = x[i][0] - x[j][0];
-			double dy = x[i][1] - x[j][1];
-			double dz = x[i][2] - x[j][2];
-			dx -= L * rint(dx / L);
-			dy -= L * rint(dy / L);
-			dz -= L * rint(dz / L);
-			double r = r_polari(dx, dy, dz);
+			double r = r_polari(dx[i][j][0],dx[i][j][1],dx[i][j][2]);
+			r += EPS;
 			if(r<cutoff){
+			assert(r>0.0);
 			U += lj_u(r);
 			}
 		}
