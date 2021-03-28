@@ -14,7 +14,7 @@ double cutoff = 3.0;
 double T = 0.7;
 double dt = 0.001;
 double t = 0.0;
-double duration = 1.0;
+double duration = 50.0;
 double L;
 
 
@@ -33,7 +33,8 @@ void print_double(double d, FILE *f) {
 }
 
 double r_polari(double x, double y, double z) {
-	return sqrt(x * x + y * y + z * z);
+	double r = sqrt(x * x + y * y + z * z); 
+	return r;
 }
 
 double lj_part(double r) {
@@ -83,7 +84,10 @@ void calculate_acc() {
 
 void calculate_distance(){
 	for(int i=0;i<N;i++){
-		for(int j=i+1;j<N;j++){
+		for(int j=0;j<N;j++){
+			if(i==j){
+				continue;
+			}
 			dx[i][j][0] = x[i][0]-x[j][0]; 
 			dx[i][j][1] = x[i][1]-x[j][1];
 			dx[i][j][2] = x[i][2]-x[j][2];
@@ -93,8 +97,8 @@ void calculate_distance(){
 			dx[i][j][2] -= L * rint(dx[i][j][2]/L);
 		}
 	}
-	// si potrebbe fare a meno di questi due cicli
-	/*for(int i=0;i<N;i++){
+	/*// si potrebbe fare a meno di questi due cicli
+	for(int i=0;i<N;i++){
 		for(int j=0;j<3;j++){
 			dx[i][i][j] = 0.0;
 		}
@@ -118,32 +122,37 @@ void calculate_forces(){
 	// update acceleration
 	calculate_distance();
 	for(int i=0;i<N;i++){
-		for(int j=i+1;j<N;j++){
-			double r = r_polari(dx[i][j][0],dx[i][j][1],dx[i][j][2]);  printf("%lf\n",r);
+		for(int j=0;j<N;j++){
+			if(i==j){
+				continue;
+			}
+			double r = r_polari(dx[i][j][0],dx[i][j][1],dx[i][j][2]);
 			if(r<cutoff){
 				double a_part = lj_part(r);
 				a[i][0] += a_part * dx[i][j][0]; 
 				a[i][1] += a_part * dx[i][j][1];
 				a[i][2] += a_part * dx[i][j][2];
 
-				a[j][0] += a_part * (-1) * dx[i][j][0]; // da controllare
-				a[j][1] += a_part * (-1) * dx[i][j][1];
-				a[j][2] += a_part * (-1) * dx[i][j][2];
+				//a[j][0] += a_part * (-1) * dx[i][j][0]; // da controllare
+				//a[j][1] += a_part * (-1) * dx[i][j][1];
+				//a[j][2] += a_part * (-1) * dx[i][j][2];
 			}			
 		}
 	}
 }
 
-void verlet_step() {
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < 3; j++) {
-			v[i][j] += dt / 2.0 * a[i][j];
-			x[i][j] += dt * v[i][j];
-			x[i][j] -= L * rint(x[i][j] / L);  //pacman
+void verlet_step(){
+	for(int i=0;i<N;i++){
+		for(int j=0;j<3;j++){
+			v[i][j] += dt/2 * a[i][j];
+			x[i][j] += dt/2 * v[i][j];
+			x[i][j] -= L * rint(x[i][j]/L);
 		}
-		calculate_forces(); //calculate_acc();
-		for (int j = 0; j < 3; j++) {
-			v[i][j] += dt / 2.0 * a[i][j];
+	}
+	calculate_forces();
+	for(int i=0;i<N;i++){
+		for(int j=0;j<3;j++){
+			v[i][j] += dt/2 * a[i][j]; 
 		}
 	}
 	t += dt;
@@ -152,19 +161,17 @@ void verlet_step() {
 double calculate_U() {
 	double U = 0;
 	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+		for (int j = i+1; j < N; j++) {
 			if (i == j) {
 				continue;
 			}
 			double r = r_polari(dx[i][j][0],dx[i][j][1],dx[i][j][2]);
-			r += EPS;
 			if(r<cutoff){
-			assert(r>0.0);
 			U += lj_u(r);
 			}
 		}
 	}
-	return U;
+	return 2*U;
 }
 
 double calculate_K() {
