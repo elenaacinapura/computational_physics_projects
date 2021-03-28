@@ -14,7 +14,6 @@ double cutoff = 3.0;
 double T = 0.7;
 double dt = 0.001;
 double t = 0.0;
-double duration = 50.0;
 double L;
 
 
