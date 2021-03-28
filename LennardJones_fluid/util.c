@@ -44,49 +44,11 @@ double lj_u(double r) {
 	return 4 * (pow(r, -12) - pow(r, -6));
 }
 
-void calculate_acc() {
-	// reset accelerations
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < 3; j++) {
-			a[i][j] = 0.0;
-		}
-	}
-	// update accelerations
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < i; j++) {
-			// distances
-			double dx = x[i][0] - x[j][0];
-			double dy = x[i][1] - x[j][1];
-			double dz = x[i][2] - x[j][2];
-
-			dx -= L * rint(dx / L);
-			dy -= L * rint(dy / L);
-			dz -= L * rint(dz / L);
-
-			double r = r_polari(dx, dy, dz);
-
-			if (r < cutoff) {
-				// common part in force
-				double acc_part = lj_part(r);
-				// acc on particle i due to j
-				a[i][0] += acc_part * dx;
-				a[i][1] += acc_part * dy;
-				a[i][2] += acc_part * dz;
-				// acc on particle j due to i
-				a[j][0] += -a[i][0];
-				a[j][1] += -a[i][1];
-				a[j][2] += -a[i][2];
-			}
-		}
-	}
-}
-
 void calculate_distance(){
 	for(int i=0;i<N;i++){
-		for(int j=0;j<N;j++){
-			if(i==j){
-				continue;
-			}
+		for(int j=i+1;j<N;j++){
+
+			/* vector from j to i */
 			dx[i][j][0] = x[i][0]-x[j][0]; 
 			dx[i][j][1] = x[i][1]-x[j][1];
 			dx[i][j][2] = x[i][2]-x[j][2];
@@ -94,21 +56,13 @@ void calculate_distance(){
 			dx[i][j][0] -= L * rint(dx[i][j][0]/L); 
 			dx[i][j][1] -= L * rint(dx[i][j][1]/L);
 			dx[i][j][2] -= L * rint(dx[i][j][2]/L);
+
+			/* vector from i to j has just a - sign */
+			dx[j][i][0] = -dx[i][j][0];
+			dx[j][i][1] = -dx[i][j][1];
+			dx[j][i][2] = -dx[i][j][2];
 		}
 	}
-	/*// si potrebbe fare a meno di questi due cicli
-	for(int i=0;i<N;i++){
-		for(int j=0;j<3;j++){
-			dx[i][i][j] = 0.0;
-		}
-	}
-	for(int i=0;i<N;i++){
-		for(int j=0;j<i;j++){
-			dx[i][j][0] = -dx[j][i][0];
-			dx[i][j][1] = -dx[j][i][1];
-			dx[i][j][2] = -dx[j][i][2];
-		}
-	}*/
 }
 
 void calculate_forces(){
@@ -121,20 +75,20 @@ void calculate_forces(){
 	// update acceleration
 	calculate_distance();
 	for(int i=0;i<N;i++){
-		for(int j=0;j<N;j++){
-			if(i==j){
-				continue;
-			}
+		for(int j=i+1;j<N;j++){
 			double r = r_polari(dx[i][j][0],dx[i][j][1],dx[i][j][2]);
+
 			if(r<cutoff){
+				/* common parti in the acceleration */
 				double a_part = lj_part(r);
+				/* acceleration on particle i due to j */
 				a[i][0] += a_part * dx[i][j][0]; 
 				a[i][1] += a_part * dx[i][j][1];
 				a[i][2] += a_part * dx[i][j][2];
-
-				//a[j][0] += a_part * (-1) * dx[i][j][0]; // da controllare
-				//a[j][1] += a_part * (-1) * dx[i][j][1];
-				//a[j][2] += a_part * (-1) * dx[i][j][2];
+				/* acceleration on particle j due to i (just the opposite) */
+				a[j][0] += -a_part * dx[i][j][0];
+				a[j][1] += -a_part * dx[i][j][1];
+				a[j][2] += -a_part * dx[i][j][2];
 			}			
 		}
 	}
