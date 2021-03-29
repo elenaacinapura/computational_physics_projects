@@ -98,7 +98,7 @@ void verlet_step(){
 	for(int i=0;i<N;i++){
 		for(int j=0;j<3;j++){
 			v[i][j] += dt/2 * a[i][j];
-			x[i][j] += dt/2 * v[i][j];
+			x[i][j] += dt * v[i][j];
 			x[i][j] -= L * rint(x[i][j]/L);
 		}
 	}
@@ -124,7 +124,7 @@ double calculate_U() {
 			}
 		}
 	}
-	return 2*U;
+	return U;
 }
 
 double calculate_K() {
