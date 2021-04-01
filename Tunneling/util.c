@@ -42,10 +42,14 @@ double calculate_T (int idx1, int idx2) {
     double k = 2.0*E;
     double x1 = X.v[idx1];
     double x2 = X.v[idx2];
-    return (cexp(I*k*(x1-x2)) - cexp(-I*k*(x1-x2)))/(phi.v[idx1]*cexp(-I*k*x2) - phi.v[idx2]*cexp(-I*k*x1));
+    return (cexp(I*k*(x2-x1)) - cexp(-I*k*(x2-x1)))/(phi.v[idx1]*cexp(I*k*x2) - phi.v[idx2]*cexp(I*k*x1));
 } 
 
-/* PRINT ROUTINES */
+/* PRINT AND CALCULATION ROUTINES */
+
+double square_cabs (complex double z) {
+    return cabs(z)*cabs(z);
+}
 
 void fprint_vec (FILE *file, double v [], int dim) {
     for (int i = 0; i < dim; i++) {

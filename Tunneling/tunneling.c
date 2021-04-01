@@ -31,21 +31,22 @@ int main () {
         numerov_step(idx, V_square, &(Param_V_square) {V0, a});
         fprint_double(outputfile, X.v[idx]);
         fprint_double(outputfile, V_square(X.v[idx], &(Param_V_square) {V0, a}));
-        fprint_double(outputfile, phi.v[idx]);
+        fprint_double(outputfile, creal(phi.v[idx]));
         fprintf(outputfile, "\n");
         idx++;
     }
 
     double T = calculate_T(X.dim-1, X.dim-5);
 
-    printf("T = %lf\n", T);
+    printf("|T|^2 = %lf\n", square_cabs(T));
 
     gnuplot_ctrl * h ;      /* un po' come FILE *f */
     h = gnuplot_init() ;
 
     gnuplot_set_term_png(h, "phi.png");
+    gnuplot_cmd(h, "set xlabel \'x\'");
 
-    gnuplot_cmd(h, "plot \'Output/phi.csv\' using 1:2 title \'V(x)\' w lines, \'Output/phi.csv\' using 1:3 title \'phi(x)\' w lines");
+    gnuplot_cmd(h, "plot \'Output/phi.csv\' using 1:2 title \'V(x)\' w lines, \'Output/phi.csv\' using 1:3 title \'Re(phi(x))\' w lines");
 
     fclose(outputfile);
     
