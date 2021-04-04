@@ -1,11 +1,15 @@
 #include "util.h"
-#include "../libraries/gnuplot_i/gnuplot_i.h"
+#include <gnuplot_i.h>
 #include <stdio.h>
 #include <math.h>
 #include <complex.h>
 #include <assert.h>
+#include <stdlib.h>
+
+#include <sqrt_babylon.h>
 
 int main () {
+    printf("babylon sqrt (2) = %lf\n", sqrt_babylon(2.0));
     /* INITIAL CONDITIONS */
     L = 10.0;
     E = 0.5;
@@ -24,7 +28,7 @@ int main () {
     double a = 1.0;
 
     FILE * outputfile;
-    outputfile = fopen("Output/phi.csv", "w");
+    outputfile = fopen("tunneling_phi.csv", "w");
 
     int idx = 1;
     while (idx < X.dim-1) {
@@ -46,7 +50,9 @@ int main () {
     gnuplot_set_term_png(h, "phi.png");
     gnuplot_cmd(h, "set xlabel \'x\'");
 
-    gnuplot_cmd(h, "plot \'Output/phi.csv\' using 1:2 title \'V(x)\' w lines, \'Output/phi.csv\' using 1:3 title \'Re(phi(x))\' w lines");
+    gnuplot_cmd(h, "plot \'tunneling_phi.csv\' using 1:2 title \'V(x)\' w lines, \'tunneling_phi.csv\' using 1:3 title \'Re(phi(x))\' w lines");
+
+    system("eog phi.png"); /* open png from terminal */
 
     fclose(outputfile);
     

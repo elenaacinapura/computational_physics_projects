@@ -1,6 +1,0 @@
-L/2 = 2.681711
-
-RESULTS OF DATA SAMPLING
-Average U = -1235.762151
-Average K = 117.424247
-Average T = 0.724841
