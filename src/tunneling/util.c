@@ -1,8 +1,11 @@
 #include "util.h"
-#include <stdio.h>
-#include <math.h>
-#include <complex.h>
+#include <numerov.h>
+
 #include <assert.h>
+#include <complex.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
 
 Array phi, X;
 double dx, E, L;
@@ -18,19 +21,12 @@ void fill_X () {
     }
 }
 
-double V_square (double x, void *p) {
-    Param_V_square *param = (Param_V_square *) p;
-    double V0 = param->V0;
-    double a = param->a;
-    if (fabs(x) < a/2.0) {
-        return V0;
-    }
-    return 0.0;
-}
+
 
 double F (double f (double, void *), double x, void *p) {
     return 2 * (f(x, p) - E);
 }
+
 
 void numerov_step (int idx, double f (double, void *), void *p) {
     assert(idx >= 1);
@@ -38,12 +34,45 @@ void numerov_step (int idx, double f (double, void *), void *p) {
     phi.dim++;
 }
 
-double calculate_T (int idx1, int idx2) {
+void execute_numerov (double F (double, void *), double V (double, void *p), void *p, FILE *file, bool output) {
+    /* initialize X */
+	fill_X();
+    /* initialize phi */
+	phi.dim = 2;
+	double k = 2.0 * E;
+	phi.v[0] = cexp(-I * k * L);
+	phi.v[1] = cexp(-I * k * (L + dx));
+
+    int idx = 1;
+	
+    while (idx < X.dim - 1) {
+		complex double phi_next = numerov_1D(X.v[idx], phi.v[idx], phi.v[idx-1], dx, F_square, p);
+		phi.v[idx+1] = phi_next;
+		phi.dim++;
+        if (output) {
+            fprint_double(file, X.v[idx]);
+            fprint_double(file, V_square(X.v[idx], &(Empty_struct){}));
+            fprint_double(file, creal(phi.v[idx]));
+            fprint_double(file, cimag(phi.v[idx]));
+            fprintf(file, "\n");
+        }
+		idx++;
+	}
+}
+
+complex double calculate_T (int idx1, int idx2) {
     double k = 2.0*E;
-    double x1 = X.v[idx1];
-    double x2 = X.v[idx2];
+    complex double x1 = X.v[idx1];
+    complex double x2 = X.v[idx2];
     return (cexp(I*k*(x2-x1)) - cexp(-I*k*(x2-x1)))/(phi.v[idx1]*cexp(I*k*x2) - phi.v[idx2]*cexp(I*k*x1));
 } 
+
+complex double calculate_R (int idx1, int idx2) {
+    double k = 2.0*E;
+    complex double x1 = X.v[idx1];
+    complex double x2 = X.v[idx2];
+    return (cexp(-I*k*(x2))*phi.v[idx1] - cexp(-I*k*x1)*phi.v[idx2])/(phi.v[idx1]*cexp(I*k*x2) - phi.v[idx2]*cexp(I*k*x1));
+}
 
 /* PRINT AND CALCULATION ROUTINES */
 
@@ -58,6 +87,3 @@ void fprint_vec (FILE *file, double v [], int dim) {
     fprintf(file, "\n");
 }
 
-void fprint_double (FILE *file, double d) {
-    fprintf(file, "%lf\t", d);
-}
