@@ -1,5 +1,6 @@
-#include "util.h"
 #include <numerov.h>
+#include <print_routines.h>
+#include "util.h"
 
 #include <assert.h>
 #include <complex.h>
@@ -7,83 +8,44 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-Array phi, X;
-double dx, E, L;
+double E;
 
-void fill_X () {
-    int dim_e = (int)ceil(2.0*L/dx);
-    assert(dim_e < MAXDIM);
-    X.v[0] = -L;
-    X.dim = 1;
-    for (int i = 1; i < dim_e; i++) {
-        X.v[i] = X.v[i-1] + dx;
-        X.dim++;
+double F_square (double x, void *p) {
+    Param_F_square *param = (Param_F_square *) p;
+    double xi = param->sqrt_xi * param->sqrt_xi;
+
+    if (fabs(x) < 0.5) {
+        return xi * (1.0 - E);
     }
+    else return -xi*E;
 }
 
-
-
-double F (double f (double, void *), double x, void *p) {
-    return 2 * (f(x, p) - E);
-}
-
-
-void numerov_step (int idx, double f (double, void *), void *p) {
-    assert(idx >= 1);
-    phi.v[idx+1] = (phi.v[idx] * (2.0 + 5.0/6.0 * dx*dx * F(f, X.v[idx], p)) - phi.v[idx - 1] * (1.0 - dx*dx / 12.0 * F(f, X.v[idx - 1], p)))/(1 - dx*dx/12.0 * F(f, X.v[idx + 1], p));
-    phi.dim++;
-}
-
-void execute_numerov (double F (double, void *), double V (double, void *p), void *p, FILE *file, bool output) {
-    /* initialize X */
-	fill_X();
-    /* initialize phi */
-	phi.dim = 2;
-	double k = 2.0 * E;
-	phi.v[0] = cexp(-I * k * L);
-	phi.v[1] = cexp(-I * k * (L + dx));
-
-    int idx = 1;
-	
-    while (idx < X.dim - 1) {
-		complex double phi_next = numerov_1D(X.v[idx], phi.v[idx], phi.v[idx-1], dx, F_square, p);
-		phi.v[idx+1] = phi_next;
-		phi.dim++;
-        if (output) {
-            fprint_double(file, X.v[idx]);
-            fprint_double(file, V_square(X.v[idx], &(Empty_struct){}));
-            fprint_double(file, creal(phi.v[idx]));
-            fprint_double(file, cimag(phi.v[idx]));
-            fprintf(file, "\n");
+void solve_numerov (double x[], complex double phi[], int dim, double dx, double F (double, void *p), void *p, bool printoutput, FILE *outfile) {
+    /* Assuming x and phi have initial conditions in position 0 and 1 */
+    int i = 2;
+    while (i < dim) {
+        /* numerov */
+        complex double new_phi = numerov_1D(x[i-1], phi[i-1], phi[i-2], dx, F, p);
+        phi[i] = new_phi;
+        x[i] = x[i-1] + dx;
+        /* print values */
+        if (printoutput) {
+            fprint_double(outfile, x[i]);
+            fprint_double(outfile, creal(phi[i]));
+            fprint_double(outfile, cimag(phi[i]));
+            fprintf(outfile, "\n");
         }
-		idx++;
-	}
-}
-
-complex double calculate_T (int idx1, int idx2) {
-    double k = 2.0*E;
-    complex double x1 = X.v[idx1];
-    complex double x2 = X.v[idx2];
-    return (cexp(I*k*(x2-x1)) - cexp(-I*k*(x2-x1)))/(phi.v[idx1]*cexp(I*k*x2) - phi.v[idx2]*cexp(I*k*x1));
-} 
-
-complex double calculate_R (int idx1, int idx2) {
-    double k = 2.0*E;
-    complex double x1 = X.v[idx1];
-    complex double x2 = X.v[idx2];
-    return (cexp(-I*k*(x2))*phi.v[idx1] - cexp(-I*k*x1)*phi.v[idx2])/(phi.v[idx1]*cexp(I*k*x2) - phi.v[idx2]*cexp(I*k*x1));
-}
-
-/* PRINT AND CALCULATION ROUTINES */
-
-double square_cabs (complex double z) {
-    return cabs(z)*cabs(z);
-}
-
-void fprint_vec (FILE *file, double v [], int dim) {
-    for (int i = 0; i < dim; i++) {
-        fprintf(file, "%lf\n", v[i]);
+        i++;
     }
-    fprintf(file, "\n");
 }
 
+complex double T_coeffcient(double x[], complex double phi[], int dim, double k) {
+    int i1 = dim-1;
+    int i2 = dim -10;
+    double x1 = x[i1];
+    double x2 = x[i2];
+    complex double phi1 = phi[i1];
+    complex double phi2 = phi[i2];
+
+    return (cexp(I*k*(x2 - x1)) - cexp(I*k*(x1 - x2))) / (phi1 * cexp(I*k*x2) - phi2 * cexp(I*k*x1));
+}
