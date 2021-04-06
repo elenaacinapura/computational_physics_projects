@@ -18,7 +18,7 @@ int main () {
     Param_F_square param = {1.0};
 
     int dim = (int)(2.0*L/dx);
-    double k = param.sqrt_xi*(E);
+    double k = param.sqrt_xi*sqrt(E);
 
     double x [dim];
     complex double phi [dim];
