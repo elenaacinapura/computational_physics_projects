@@ -12,7 +12,7 @@
 int main() {
 	double L = 20.0;
 	double dx = 1e-3;
-	Param_F_square param = {1.0};
+	Param_F param = {100.0};
 
 	int dim = (int)(2.0 * L / dx);
 	double x[dim];
@@ -34,7 +34,7 @@ int main() {
 		phi[0] = cexp(-I * k * (-L));
 		phi[1] = cexp(-I * k * (-L + dx));
 
-        solve_numerov(x, phi, dim, dx, F_square, &param, 0, file);
+        solve_numerov(x, phi, dim, dx, F_gauss, &param, 0, file);
 
         T = T_coeffcient(x, phi, dim, k);
 

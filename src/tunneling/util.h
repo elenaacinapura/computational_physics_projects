@@ -6,15 +6,21 @@
 #include <stdio.h>
 
 /* STRUCTURES */
-typedef struct Param_F_square {
+typedef struct Param_F {
     double sqrt_xi;
-} Param_F_square;
+} Param_F;
 
 /* VARIABLES */
 extern double E; /* in reduced units */
 
 /* FUNCTIONS */
 double F_square (double x, void *p);
+
+double F_gauss (double x, void *p);
+
+double F_asymm_L (double x, void *p);
+
+double F_asymm_R (double x, void *p);
 
 void solve_numerov (double x[], complex double phi[], int dim, double dx, double F (double, void *p), void *p, bool printoutput, FILE *outfile);
 
