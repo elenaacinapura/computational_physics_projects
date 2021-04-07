@@ -11,7 +11,7 @@
 double E;
 
 double F_square (double x, void *p) {
-    Param_F_square *param = (Param_F_square *) p;
+    Param_F *param = (Param_F *) p;
     double xi = param->sqrt_xi * param->sqrt_xi;
 
     if (fabs(x) < 0.5) {
@@ -20,8 +20,45 @@ double F_square (double x, void *p) {
     else return -xi*E;
 }
 
+double F_gauss (double x, void *p) {
+    Param_F *param = (Param_F *) p;
+    double xi = param->sqrt_xi * param->sqrt_xi;
+
+    return xi * (-exp(-x*x/2) - E);
+}
+
+double F_asymm_L (double x, void *p) {
+    Param_F *param = (Param_F *) p;
+    double xi = param->sqrt_xi * param->sqrt_xi;
+
+    if (fabs(x) < 0.5) {
+        if (x < 0.0) {
+            return xi * (1.0 - E);
+        } else {
+            return xi * (0.5 - E);
+        }
+    } else return -xi*E;
+}
+
+double F_asymm_R (double x, void *p) {
+    Param_F *param = (Param_F *) p;
+    double xi = param->sqrt_xi * param->sqrt_xi;
+
+    if (fabs(x) < 0.5) {
+        if (x > 0.0) {
+            return xi * (1.0 - E);
+        } else {
+            return xi * (0.5 - E);
+        }
+    } else return -xi*E;
+}
+
 void solve_numerov (double x[], complex double phi[], int dim, double dx, double F (double, void *p), void *p, bool printoutput, FILE *outfile) {
     /* Assuming x and phi have initial conditions in position 0 and 1 */
+
+    Param_F *param = (Param_F *) p;
+    double xi = param->sqrt_xi * param->sqrt_xi;
+
     int i = 2;
     while (i < dim) {
         /* numerov */
@@ -30,9 +67,10 @@ void solve_numerov (double x[], complex double phi[], int dim, double dx, double
         x[i] = x[i-1] + dx;
         /* print values */
         if (printoutput) {
-            fprint_double(outfile, x[i]);
+            fprint_double(outfile, -x[i]);
             fprint_double(outfile, creal(phi[i]));
             fprint_double(outfile, cimag(phi[i]));
+            fprint_double(outfile, F(x[i], p)/xi + E);
             fprintf(outfile, "\n");
         }
         i++;
