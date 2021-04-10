@@ -10,23 +10,16 @@
 #include "util.h"
 
 int main(){
-
-    /* valori di csi */
-    double xi[] = {0.2,0.05,0.01};
     
-    /* valori di alpha */
+    /* vettore di alpha */
     int dim = (int)rint(alpha_max/dalpha);
     double alpha[dim];
     fill_alpha(alpha,dim);
-
-
-    /*  */
-    double cutoff = 50.0;
-    int density = 500;
-    Param_E par;
-    double E;
     
     /* runno */
+    double xi[] = {0.1,0.025,0.005};
+    Param_E par;
+    double E;
     FILE *f_E;
     f_E = fopen("E.csv","w");
 
@@ -34,22 +27,21 @@ int main(){
         
         fprint_double(f_E,alpha[i]);
         
+        par.alpha = alpha[i];
+        
         /* primo valore di xi */
         par.xi = xi[0];
-        par.alpha = alpha[i];
-        E = integrate_trap(integrand,-cutoff,cutoff,density,&par);
+        E = calculate_E(par);
         fprint_double(f_E,E);
         
         /* secondo valore di xi */
         par.xi = xi[1];
-        par.alpha = alpha[i];
-        E = integrate_trap(integrand,-cutoff,cutoff,density,&par);
+        E = calculate_E(par);
         fprint_double(f_E,E);
         
         /* primo valore di xi */
         par.xi = xi[2];
-        par.alpha = alpha[i];
-        E = integrate_trap(integrand,-cutoff,cutoff,density,&par);
+        E = calculate_E(par);
         fprint_double(f_E,E);
 
         fprintf(f_E,"\n");
