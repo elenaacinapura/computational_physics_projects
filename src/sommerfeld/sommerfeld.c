@@ -13,26 +13,27 @@
 
 int main () {
     Params p;
-    double xi[] = {0.05, 0.01, 0.005};
+    double xi[] = {0.025, 0.005, 0.0025};
 
     bool stop = 0;
     for (int i = 0; i < 3; i++) {
         p.xi = xi[i];
-        printf("---------------------------------------------\nxi = %.03lf\n", xi[i]);
-        for (int n = 0; n < 10; n++) {
+        printf("---------------------------------------------\nxi = %.04lf\n", xi[i]);
+        for (int n = 0; n < 15; n++) {
             if (stop) {
                 stop = 0;
                 break;
             }
             p.n = n;
             if (setjmp(JumpBuffer)) {
-                printf("End of bound states reached for n = %d\n\n", n);
+                printf("End of bound states reached for n = %d\n", n);
                 stop = 1;
                 continue;
             }
             double E = zero_newton(f, -0.0001, &p);
-            printf("E = %lf\n", E);
+            printf("n = %d\t E = %lf\n", n, E);
         }
     }
+    printf("---------------------------------------------\n");
 
 }
