@@ -12,7 +12,8 @@
 int main() {
 	double L = 20.0;
 	double dx = 1e-3;
-	Param_F param = {100.0};
+	double xi_true;		/* xi_true = h*h/2*m*|V_0|*a*a */
+	Param_F param;
 
 	int dim = (int)(2.0 * L / dx);
 	double x[dim];
@@ -26,35 +27,73 @@ int main() {
     FILE *file;
     file = fopen("T.csv", "w");
 
-	while (E <= 4.0) {
+	while (E <= 5.0) {
 
-        k = param.sqrt_xi * sqrt(E);
+		fprint_double(file,E);
+		
+		/* primo valore */
+		xi_true = 0.2;
+		param.xi = 1/xi_true;
+
+        k = sqrt(param.xi) * sqrt(E);
 		x[0] = -L;
 		x[1] = -L + dx;
 		phi[0] = cexp(-I * k * (-L));
 		phi[1] = cexp(-I * k * (-L + dx));
 
-        solve_numerov(x, phi, dim, dx, F_gauss, &param, 0, file);
+        solve_numerov(x, phi, dim, dx, F_cosh, &param, 0, file);
 
         T = T_coeffcient(x, phi, dim, k);
 
-        fprint_double(file, E);
         fprint_double(file, T*conj(T));
-        fprintf(file, "\n");
+		fprint_double(file, 1-T*conj(T));
 
+		/* secondo valore */
+		xi_true = 0.05;
+		param.xi = 1/xi_true;
+
+        k = sqrt(param.xi) * sqrt(E);
+		x[0] = -L;
+		x[1] = -L + dx;
+		phi[0] = cexp(-I * k * (-L));
+		phi[1] = cexp(-I * k * (-L + dx));
+
+        solve_numerov(x, phi, dim, dx, F_cosh, &param, 0, file);
+
+        T = T_coeffcient(x, phi, dim, k);
+
+        fprint_double(file, T*conj(T));
+		fprint_double(file, 1-T*conj(T));
+
+		/* terzo valore */
+		xi_true = 0.01;
+		param.xi = 1/xi_true;
+
+        k = sqrt(param.xi) * sqrt(E);
+		x[0] = -L;
+		x[1] = -L + dx;
+		phi[0] = cexp(-I * k * (-L));
+		phi[1] = cexp(-I * k * (-L + dx));
+
+        solve_numerov(x, phi, dim, dx, F_cosh, &param, 0, file);
+
+        T = T_coeffcient(x, phi, dim, k);
+
+        fprint_double(file, T*conj(T));
+		fprint_double(file, 1-T*conj(T));
+
+        fprintf(file, "\n");
 		E += dE;
 	}
 
     fclose(file);
 
+
     /* Plot */
     gnuplot_ctrl *h;
     h = gnuplot_init();
-    gnuplot_set_term_png(h, "T.png");
-	gnuplot_set_xlabel(h, "E");
-    gnuplot_set_ylabel(h, "|T|^2");
-	gnuplot_cmd(h, "set title \'T(E)\'");
-    gnuplot_cmd(h, "unset key");
-	gnuplot_cmd(h, "plot \'T.csv\' using 1:2 w lines");
-	system("eog T.png"); /* open png from terminal */
+	gnuplot_cmd(h, "load \'plot_TR.gp\'");
+	system("eog T.png");
+	system("eog R.png");
+
 }

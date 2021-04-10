@@ -24,3 +24,6 @@ add_custom_target(run-tunneling-transmission
     DEPENDS transmission
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_TR.gp
+DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
