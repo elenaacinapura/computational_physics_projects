@@ -1,5 +1,7 @@
+#include <assert.h>
 #include <gnuplot_i.h>
 #include <math.h>
+#include <print_routines.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +28,8 @@ int main() {
 	int M = 0;
 	double U_sample = 0.0;
 	double K_sample = 0.0;
+	double P_sample = 0.0;
+	double dr = cutoff / S;
 
 	/*-----------------------------------------------------------
 	 * set initial conditions
@@ -40,6 +44,11 @@ int main() {
 		for (int j = 0; j < 3; j++) {
 			v[i][j] = 0;
 		}
+	}
+
+	/* empty g(r) */
+	for (int i = 0; i < S; i++) {
+		g[i] = 0.0;
 	}
 
 	/* calculate  initial forces */
@@ -69,12 +78,27 @@ int main() {
 		/* current energies */
 		double K = calculate_K();
 		double U = calculate_U();
+		double P = calculate_P();
 
 		/* sampling data */
 		if (t > equilibration_duration && count % sampling_interval == 0) {
 			M++;
 			U_sample += U;
 			K_sample += K;
+			P_sample += P;
+
+			/* g(r) */
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (i != j) {
+						double dist = r_polari(dx[i][j][0], dx[i][j][1], dx[i][j][2]);
+						int pos = (int)rint(dist / dr);
+						if (pos < S) {
+							g[pos] += 1.0 / dr;
+						}
+					}
+				}
+			}
 		}
 
 		/* output stuff */
@@ -97,11 +121,31 @@ int main() {
 	/* calculate averages */
 	U_sample /= M;
 	K_sample /= M;
+	P_sample = P_sample / (M * 6.0 * L * L * L);
 	double T_sample = 2.0 / (3.0 * N) * K_sample;
 
+	/* g(r) */
+	FILE *file_g;
+	double P_int = 0.0;
+	file_g = fopen("g.csv", "w");
+	for (int i = 0; i < S; i++) {
+		double r = (double)(i * dr);
+		g[i] /= 4 * M_PI * r * r * N * M * rho;
+		if (i > 0) {
+			P_int += 2.0 / 3.0 * M_PI * rho * rho * pow(r, 4) * lj_part(r) * g[i] * dr;
+		}
+
+		fprint_double(file_g, r);
+		fprint_double(file_g, g[i]);
+		fprintf(file_g, "\n");
+	}
+	fclose(file_g);
+
 	/* output results */
-	printf("\nRESULTS OF DATA SAMPLING\n");
-	printf("Average U = %lf\nAverage K = %lf\nAverage T = %lf\n", U_sample, K_sample, T_sample);
+	printf("\n----------------------------------------------\n");
+	printf("RESULTS OF DATA SAMPLING\n");
+	printf("----------------------------------------------\n");
+	printf("Average U = %lf\nAverage K = %lf\nAverage T = %lf\nAverage P = %lf\nP with integral = %lf\n\n\n", U_sample, K_sample, T_sample, P_sample, P_int);
 
 	/* close output files */
 	fclose(f_energy);
@@ -111,4 +155,5 @@ int main() {
 	h = gnuplot_init();
 	gnuplot_cmd(h, "load \'plot_energies.gp\'");
 	gnuplot_cmd(h, "load \'plot_T.gp\'");
+	gnuplot_cmd(h, "load \'plot_g.gp\'");
 }
