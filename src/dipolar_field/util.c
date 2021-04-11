@@ -33,11 +33,11 @@ void execute_verlet(double pos[], double v[], double a[], double dt, void *p) {
 	calculate_acc(pos, a, p);
 	FILE *file;
 	file = fopen("trajectory.csv", "w");
-	while (pos[0] < 5.0 && pos[0] > -60.0 && pos[1] < 7.0) {
+	while (pos[0] < 5.0 && pos[0] > -60.0) {
 		verlet_2D(pos, v, a, dt, calculate_acc, p);
-		fprint_double(file, pos[0]);
-		fprint_double(file, pos[1]);
-		fprintf(file, "\n");
+		// fprint_double(file, pos[0]);
+		// fprint_double(file, pos[1]);
+		// fprintf(file, "\n");
 	}
 	fclose(file);
 }
