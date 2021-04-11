@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/sommerfeld.dir/sommerfeld.c.o CMakeFiles/sommerfeld.dir/util.c.o  -o sommerfeld  ../../extern/computational_physics_lib/src/libcompphy-lib.a -lm 

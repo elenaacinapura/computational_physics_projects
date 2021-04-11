@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/media/Dati/Git/ComputationalPhysics/src/sommerfeld/sommerfeld.c
+util.h
+/media/Dati/Git/ComputationalPhysics/src/sommerfeld/util.h
+gnuplot_i.h
+-
+integrate_notypesafe.h
+-
+print_routines.h
+-
+zeros_newton.h
+-
+assert.h
+-
+math.h
+-
+setjmp.h
+-
+stdbool.h
+-
+stdio.h
+-
+
+/media/Dati/Git/ComputationalPhysics/src/sommerfeld/util.h
+setjmp.h
+-
+
+computational_physics_lib/include/gnuplot_i.h
+stdio.h
+-
+
+computational_physics_lib/include/integrate_notypesafe.h
+
+computational_physics_lib/include/print_routines.h
+stdio.h
+-
+
+computational_physics_lib/include/zeros_newton.h
+

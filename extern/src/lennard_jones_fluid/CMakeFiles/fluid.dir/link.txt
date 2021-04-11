@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/fluid.dir/fluid.c.o CMakeFiles/fluid.dir/util.c.o CMakeFiles/fluid.dir/FCC.c.o  -o fluid  ../../extern/computational_physics_lib/src/libcompphy-lib.a -lm 
