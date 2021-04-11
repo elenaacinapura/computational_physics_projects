@@ -32,6 +32,6 @@ double f (double E, void *p) {
 
     double high = acosh(pow(-E, -0.25));
     double low = -high;
-    return integrate(integrand, low, high, 100, p) - M_PI* (n + 0.5) * sqrt(xi);
+    return integrate(integrand, low, high, 1000, p) - M_PI* (n + 0.5) * sqrt(xi);
 }
 
