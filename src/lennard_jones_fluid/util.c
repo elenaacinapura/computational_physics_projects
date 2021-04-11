@@ -37,11 +37,13 @@ double r_polari(double x, double y, double z) {
 }
 
 double lj_part(double r) {
-	return 24 * (2 * pow(r, -14) - pow(r, -8));
+	// return 24 * (2 * pow(r, -14) - pow(r, -8));
+	return 24 * 2 * pow(r, -14);
 }
 
 double lj_u(double r) {
-	return 4 * (pow(r, -12) - pow(r, -6));
+	// return 4 * (pow(r, -12) - pow(r, -6));
+	return 4 * pow(r, -12);
 }
 
 void calculate_distance(){
