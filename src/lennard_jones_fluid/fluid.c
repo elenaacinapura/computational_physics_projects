@@ -17,7 +17,7 @@ int main() {
 	L = pow(N / rho, 1.0 / 3.0);
 
 	/* durantion of equilibration and of data sampling */
-	double equilibration_duration = 60.0;
+	double equilibration_duration = 80.0;
 	int equilibration_interval = 1000;
 	double sampling_duration = 80.0;
 	int sampling_interval = 1000;
