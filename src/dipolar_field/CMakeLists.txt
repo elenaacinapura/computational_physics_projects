@@ -1,6 +1,6 @@
 add_executable(dipolar dipolar.c util.c)
 
-target_compile_options(dipolar PRIVATE -Wall -O3 -march=native -ffast-math)
+target_compile_options(dipolar PRIVATE -O3 -march=native -ffast-math)
 
 target_link_libraries(dipolar compphy-lib)
 

@@ -18,7 +18,7 @@ int main () {
     Param_F param = {1.0};
 
     int dim = (int)(2.0*L/dx);
-    double k = param.sqrt_xi*sqrt(E);
+    double k = sqrt(param.xi)*sqrt(E);
 
     double x [dim];
     complex double phi [dim];
@@ -36,7 +36,7 @@ int main () {
     fclose(file);
 
     complex double T = T_coeffcient(x, phi, dim, k);
-    printf("|T|^2 = %lf\n", T*conj(T));
+    printf("|T|^2 = %lf\n", (double)(T*conj(T)));
 
     /* Plot */
     gnuplot_ctrl *h;
@@ -44,7 +44,7 @@ int main () {
     gnuplot_set_term_png(h, "solution.png");
     gnuplot_set_xlabel(h, "x");
 	char cmd[1000];
-	sprintf(cmd, "set title \'E = %lf, xi = %lf\'", E, param.sqrt_xi*param.sqrt_xi);
+	sprintf(cmd, "set title \'E = %lf, xi = %lf\'", E, param.xi);
 	gnuplot_cmd(h, cmd);
 	gnuplot_cmd(h, "plot \'solution.csv\' using 1:2 title \'Re(phi(x))\' w lines, \'solution.csv\' using 1:4 title \'Potential\' w lines");
     gnuplot_cmd(h, "pause 2");
