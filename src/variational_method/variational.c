@@ -20,8 +20,8 @@ int main() {
 	FILE *file;
 	file = fopen("E.csv", "w");
 
-	double alpha = 0.1;
-	while (alpha <= 4.0) {
+	double alpha = 0.08;
+	while (alpha <= 1.2) {
 		p.alpha = alpha;
 		fprint_double(file, alpha);
 
@@ -48,9 +48,9 @@ int main() {
 	}
     printf("\n");
 
-	gnuplot_ctrl *h;
-	h = gnuplot_init();
-	gnuplot_cmd(h, "load \'plot_E.gp\'");
+	system("gnuplot plot_E.gp -p");
 
-	system("eog E.png");
+	// gnuplot_ctrl *h;
+	// h = gnuplot_init();
+	// gnuplot_cmd(h, "load \'plot_E.gp\'");
 }
