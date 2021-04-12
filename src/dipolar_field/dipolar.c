@@ -118,14 +118,4 @@ int main() {
 	}
 	fclose(file);
 
-
-	/* Plot */
-	gnuplot_ctrl *h, *g;
-	h = gnuplot_init();
-	// gnuplot_cmd(h, "load \'plot_trajectory.gp\'");
-	gnuplot_cmd(h, "load \'plot_pi.gp\'");
-	g = gnuplot_init();
-	gnuplot_cmd(g, "load \'plot_pi_45.gp\'");
-	// system("eog trajectory.png");
-	// system("eog pi.png");
 }
