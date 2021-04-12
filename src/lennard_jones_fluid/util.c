@@ -10,9 +10,9 @@ double a[N][3];
 double dx[N][N][3];
 double g[S];
 
-double rho = 0.5;
+double rho = 0.7;
+double T = 0.8;
 double cutoff = 3.0;
-double T = 0.5;
 double dt = 0.001;
 double t = 0.0;
 double L;
