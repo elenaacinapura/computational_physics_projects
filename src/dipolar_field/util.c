@@ -14,14 +14,14 @@ double Fx(double x, double z, void *p) {
 	Params *param = (Params *)p;
 	double theta = param->theta;
 	assert(r(x, z) != 0.0);
-	return -sin(theta) / pow(r(x, z), 3) + 3.0 * x * x * sin(theta) / pow(r(x, z), 5);
+	return -sin(theta) / pow(r(x, z), 3) + 3.0 * x * (x * sin(theta) + z * cos(theta)) / pow(r(x, z), 5);
 }
 
 double Fz(double x, double z, void *p) {
 	Params *param = (Params *)p;
 	double theta = param->theta;
 	assert(r(x, z) != 0.0);
-	return -cos(theta) / pow(r(x, z), 3) + 3.0 * z * z * cos(theta) / pow(r(x, z), 5);
+	return -cos(theta) / pow(r(x, z), 3) + 3.0 * z * (x * sin(theta) + z * cos(theta)) / pow(r(x, z), 5);
 }
 
 void calculate_acc(double pos[], double a[], void *p) {
