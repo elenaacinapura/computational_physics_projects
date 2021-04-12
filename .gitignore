@@ -53,6 +53,8 @@ modules.order
 *.png
 *.csv
 .vscode
+*.eps
+*.tex
 
 # Build directories
 build/
