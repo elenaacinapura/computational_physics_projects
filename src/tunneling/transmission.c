@@ -27,12 +27,12 @@ int main() {
     FILE *file;
     file = fopen("T.csv", "w");
 
-	while (E <= 5.0) {
+	while (E <= 3.0) {
 
 		fprint_double(file,E);
 		
 		/* primo valore */
-		xi_true = 0.2;
+		xi_true = 0.1;
 		param.xi = 1/xi_true;
 
         k = sqrt(param.xi) * sqrt(E);
@@ -66,7 +66,7 @@ int main() {
 		fprint_double(file, 1-T*conj(T));
 
 		/* terzo valore */
-		xi_true = 0.01;
+		xi_true = 0.0025;
 		param.xi = 1/xi_true;
 
         k = sqrt(param.xi) * sqrt(E);
@@ -89,11 +89,6 @@ int main() {
     fclose(file);
 
 
-    /* Plot */
-    gnuplot_ctrl *h;
-    h = gnuplot_init();
-	gnuplot_cmd(h, "load \'plot_TR.gp\'");
-	system("eog T.png");
-	system("eog R.png");
+	system("gnuplot plot_TR.gp -p");
 
 }
