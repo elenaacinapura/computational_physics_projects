@@ -11,7 +11,7 @@
 
 int main() {
 	/*-----------------------------------------------------------
-	 * definition of variables
+	 * Definition of variables
 	 *-----------------------------------------------------------
 	 */
 
@@ -32,7 +32,7 @@ int main() {
 	double dr = cutoff / S;
 
 	/*-----------------------------------------------------------
-	 * set initial conditions
+	 * Set initial conditions
 	 *-----------------------------------------------------------
 	 */
 
@@ -63,7 +63,7 @@ int main() {
 	int count = 0;
 
 	/*-----------------------------------------------------------
-	 * simulation
+	 * Simulation
 	 *-----------------------------------------------------------
 	 */
 	do {
@@ -101,7 +101,7 @@ int main() {
 			}
 		}
 
-		/* output stuff */
+		/* output stuff to files */
 		/* energy */
 		print_double(t, f_energy);
 
@@ -117,6 +117,11 @@ int main() {
 
 		count++;
 	} while (t < equilibration_duration + sampling_duration);
+
+	/*-----------------------------------------------------------
+	 * Calculations
+	 *-----------------------------------------------------------
+	 */
 
 	/* calculate averages */
 	U_sample /= M;
@@ -139,21 +144,25 @@ int main() {
 		fprint_double(file_g, g[i]);
 		fprintf(file_g, "\n");
 	}
+	/* close output files */
 	fclose(file_g);
+	fclose(f_energy);
+	fclose(f_t);
 
-	/* output results */
+	/*-----------------------------------------------------------
+	 * Output
+	 *-----------------------------------------------------------
+	 */
+
 	printf("\n----------------------------------------------\n");
 	printf("RESULTS OF DATA SAMPLING\n");
 	printf("----------------------------------------------\n");
 	printf("Average U = %lf\nAverage K = %lf\nAverage T = %lf\nAverage P = %lf\nP with integral = %lf\n\n\n", U_sample, K_sample, T_sample, P_sample, P_int);
 
-	/* close output files */
-	fclose(f_energy);
-	fclose(f_t);
 
-	gnuplot_ctrl *h;
-	h = gnuplot_init();
-	gnuplot_cmd(h, "load \'plot_energies.gp\'");
-	gnuplot_cmd(h, "load \'plot_T.gp\'");
-	gnuplot_cmd(h, "load \'plot_g.gp\'");
+	// gnuplot_ctrl *h;
+	// h = gnuplot_init();
+	// gnuplot_cmd(h, "load \'plot_energies.gp\'");
+	// gnuplot_cmd(h, "load \'plot_T.gp\'");
+	// gnuplot_cmd(h, "load \'plot_g.gp\'");
 }
