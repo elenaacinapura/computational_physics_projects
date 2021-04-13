@@ -1,8 +1,8 @@
 add_executable(quantum_scattering quantum_scattering.c util.c)
 
-target_compile_options(quantum_scattering PRIVATE -Wall -O3 -march=native -ffast-math)
+target_compile_options(quantum_scattering PRIVATE -Wall -O3 -march=native -ffast-math -lgsl)
 
-target_link_libraries(quantum_scattering compphy-lib)
+target_link_libraries(quantum_scattering compphy-lib gsl)
 
 add_custom_target(run-quantum-scattering
     COMMAND quantum_scattering
