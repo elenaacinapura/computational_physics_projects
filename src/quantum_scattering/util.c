@@ -13,7 +13,15 @@ double F_hard(double r, void *param) {
 	double xi = p->xi;
     double E = p->E;
 	int l = p->l;
-	return (double)(l*(l-1)/(r*r)) - xi*E;
+	return (double)(l*(l+1))/(r*r) - xi*E;
+}
+
+double F_lj(double r, void *param) {
+    Params *p = (Params *)param;
+	double xi = p->xi;
+    double E = p->E;
+	int l = p->l;
+    return xi*4.0*(pow(r, -12) - pow(r, -6)) + (double)(l*(l+1))/(r*r) - xi*E;
 }
 
 void execute_numerov (double x[], double u[], int dim, double dx, double F (double, void *), void *p) {
@@ -29,4 +37,8 @@ void execute_numerov (double x[], double u[], int dim, double dx, double F (doub
 double find_delta (double r1, double r2, double u1, double u2, int l, double k) {
     double K = u2*r1/(u1*r2);
     return atan((gsl_sf_bessel_jl(l, k*r2) - K*gsl_sf_bessel_jl(l, k*r1)) / (gsl_sf_bessel_yl(l, k*r2) - K * gsl_sf_bessel_yl(l, k*r1)));
+}
+
+double sin_2_delta_th(double k, int l) {
+    return pow(gsl_sf_bessel_jl(l, k), 2) / (pow(gsl_sf_bessel_jl(l, k), 2) + pow(gsl_sf_bessel_yl(l, k), 2));
 }
