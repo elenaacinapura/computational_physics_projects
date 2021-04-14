@@ -24,22 +24,23 @@ int main() {
 	double L = 50.0;
 	double dx = 0.001;
 	int dim = (int)(L / dx);
-
+	/* Arrays for position ang wave function */
 	double x[dim];
 	double u[dim];
 
+	/* Preparing for the loop */
 	E = E_start;
 	double sigma;
 	FILE *file;
 	file = fopen("sigma_tot.csv", "w");
 	assert(file != NULL);
 
-	while (E <= E_end) {
+	while (E <= E_end) {	/* Loop on energies */
 		E += dE;
 		double k = sqrt(xi * E);
 		sigma = 0.0;
 
-		for (int l = 0; l < 20; l++) {
+		for (int l = 0; l < 20; l++) {	/* Loop on l */
 			/* Set initial conditions*/
 			double x0, u0, u1;
 			if (potential_type == 0) { /* Hard sphere */
@@ -56,10 +57,15 @@ int main() {
 			x[1] = x0 + dx;
 			u[1] = u1;
 
+			/* Execute numerov */
 			Params p = {xi, E, l};
+			if (potential_type == 0) {
+				execute_numerov(x, u, dim, dx, F_hard, &p);
+			} else if (potential_type == 1) {
+				execute_numerov(x, u, dim, dx, F_lj, &p);
+			}
 
-			execute_numerov(x, u, dim, dx, F_hard, &p);
-
+			/* Calculate delta_l and sigma_tot */
 			int idx1 = dim - 1;
 			int idx2 = dim - 20;
 			double r1 = x[idx1];

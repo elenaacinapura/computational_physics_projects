@@ -8,6 +8,8 @@ typedef struct Params {
 
 double F_hard(double r, void *param);
 
+double F_lj(double r, void *param);
+
 void execute_numerov (double x[], double u[], int dim, double dx, double F (double, void *), void *p);
 
 double find_delta (double r1, double r2, double u1, double u2, int l, double k);
