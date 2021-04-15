@@ -3,7 +3,7 @@
 #include <print_routines.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <verlet.h>
+#include <differential_eq/verlet.h>
 
 #include "util.h"
 

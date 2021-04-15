@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <gnuplot_i.h>
-#include <integrate_notypesafe.h>
+#include <numerical_methods/integrate_notypesafe.h>
 #include <math.h>
-#include <minimum.h>
+#include <numerical_methods/minimum.h>
 #include <print_routines.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include <gnuplot_i.h>
-#include <integrate_notypesafe.h>
+#include <numerical_methods/integrate_notypesafe.h>
 #include <print_routines.h>
 
 #include "util.h"

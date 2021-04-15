@@ -1,4 +1,4 @@
-#include <numerov.h>
+#include <differential_eq/numerov.h>
 #include <print_routines.h>
 #include "util.h"
 

@@ -2,7 +2,7 @@
 #include <complex.h>
 #include <gnuplot_i.h>
 #include <math.h>
-#include <numerov.h>
+#include <differential_eq/numerov.h>
 #include <print_routines.h>
 #include <stdio.h>
 #include <stdlib.h>

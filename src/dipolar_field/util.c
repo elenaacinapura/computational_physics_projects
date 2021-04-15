@@ -4,7 +4,7 @@
 #include <math.h>
 #include <print_routines.h>
 #include <stdio.h>
-#include <verlet.h>
+#include <differential_eq/verlet.h>
 
 double r(double x, double z) {
 	return sqrt(x * x + z * z);

@@ -1,9 +1,9 @@
 #include "util.h"
 
 #include <gnuplot_i.h>
-#include <integrate_notypesafe.h>
+#include <numerical_methods/integrate_notypesafe.h>
 #include <print_routines.h>
-#include <zeros_newton.h>
+#include <numerical_methods/zero_newton.h>
 
 #include <assert.h>
 #include <math.h>

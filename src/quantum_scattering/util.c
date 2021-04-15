@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <gsl/gsl_sf_bessel.h>
 #include <math.h>
-#include <numerov.h>
+#include <differential_eq/numerov.h>
 #include <print_routines.h>
 #include <stdio.h>
 
