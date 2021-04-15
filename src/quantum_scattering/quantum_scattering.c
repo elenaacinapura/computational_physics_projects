@@ -13,16 +13,22 @@ int main() {
 		0 for hard sphere
 		1 for lennard-jones
 	*/
-	int potential_type = 0;
+	int potential_type = 1;
 	/* Parameters */
-	double xi = 1.0; /* xi = (2 m a^2 V0) / h^2 */
+	double kB = 1.38e-23;
+	double eps = 68.5 * kB;
+	double s = 3.18e-10;
+	double hbar = 1.05e-34;
+	double m = 1.66e-27;
+
+	double xi = (2.0*m*s*s*eps/(pow(hbar, 2))); /* xi = (2 m a^2 V0) / h^2 */
 	double E;
-	double E_start = 0.0;
-	double E_end = 10.0;
-	double dE = 0.5;
+	double E_start = 0.05*1.6e-22 / eps;
+	double E_end = 5.0*1.6e-22 / eps;
+	double dE = 0.05*1.6e-22 / eps;
 	/* How far I will go */
 	double L = 50.0;
-	double dx = 0.001;
+	double dx = 0.005;
 	int dim = (int)(L / dx);
 	/* Arrays for position ang wave function */
 	double x[dim];
@@ -36,7 +42,6 @@ int main() {
 	assert(file != NULL);
 
 	while (E <= E_end) {	/* Loop on energies */
-		E += dE;
 		double k = sqrt(xi * E);
 		sigma = 0.0;
 
@@ -77,9 +82,12 @@ int main() {
 
 			sigma += 4 * M_PI / (k * k) * (double)(2 * l + 1) * sin(delta_l) * sin(delta_l);
 		}
-		fprint_double(file, E);
+		fprint_double(file, E / 1.6e-22 * eps);
 		fprint_double(file, sigma);
 		fprintf(file, "\n");
+
+		E += dE;
+
 	}
 	fclose(file);
 

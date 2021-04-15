@@ -1,7 +1,6 @@
 set datafile separator '\t'
 
-set title '{/Symbol S}_{tot}'
-set xlabel 'E^*'
+set xlabel 'E [meV]'
 set ylabel '{/Symbol S}_{tot}' offset 1,0 rotate by 0
 unset key
 set grid 
