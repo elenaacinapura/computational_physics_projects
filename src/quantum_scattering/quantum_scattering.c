@@ -14,6 +14,7 @@ int main() {
 		1 for lennard-jones
 	*/
 	int potential_type = 1;
+
 	/* Parameters */
 	double kB = 1.38e-23;
 	double eps = 68.5 * kB;
@@ -21,11 +22,20 @@ int main() {
 	double hbar = 1.05e-34;
 	double m = 1.66e-27;
 
-	double xi = (2.0*m*s*s*eps/(pow(hbar, 2))); /* xi = (2 m a^2 V0) / h^2 */
-	double E;
-	double E_start = 0.05*1.6e-22 / eps;
-	double E_end = 5.0*1.6e-22 / eps;
-	double dE = 0.05*1.6e-22 / eps;
+	double xi, E_start, E_end, dE, E;
+	if (potential_type == 0) {
+		xi = 1.0;
+		dE = 0.01;
+		E_start = 0.001;
+		E_end = 10.0;
+	} else if (potential_type = 1){
+		xi = (2.0*m*s*s*eps/(pow(hbar, 2))); /* xi = (2 m a^2 V0) / h^2 */
+		E_start = 0.05*1.6e-22 / eps;
+		E_end = 5.0*1.6e-22 / eps;
+		dE = 0.05*1.6e-22 / eps;
+
+	}
+
 	/* How far I will go */
 	double L = 50.0;
 	double dx = 0.005;
@@ -82,8 +92,13 @@ int main() {
 
 			sigma += 4 * M_PI / (k * k) * (double)(2 * l + 1) * sin(delta_l) * sin(delta_l);
 		}
-		fprint_double(file, E / 1.6e-22 * eps);
-		fprint_double(file, sigma);
+		if (potential_type == 1) {
+			fprint_double(file, E / 1.6e-22 * eps);
+		}
+		if (potential_type == 0) {
+			fprint_double(file, E);
+		}
+		fprint_double(file, sigma * s*s / (1e-20));
 		fprintf(file, "\n");
 
 		E += dE;
