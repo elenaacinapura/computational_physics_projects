@@ -31,9 +31,9 @@ int main() {
 	double L, x0, A, B;
 	if (potential_type == 0) {
 		L = 5.0;
-		x0 = 0.15;
+		x0 = 0.3;
 		A = 1.0;
-		B = -2.0;
+		B = 1.0;
 	} else if (potential_type == 1) {
 		L = 2.0;
 		x0 = 1.5;
@@ -52,13 +52,12 @@ int main() {
 	p.l = l;
 
 	double E_start = -1.0;
-	double dE = 0.01;
+	double dE = 0.001;
 	double E_end = 0.0;
 
 	FILE *file;
 	file = fopen("delta.csv", "w");
 	assert(file != NULL);
-	printf("l = %d\n", l);
 
 	double E = E_start + dE;
 	double delta;
@@ -94,5 +93,5 @@ int main() {
 	printf("\nNumber of bound states found: %d\n", cnt_bound);
 	fclose(file);
 
-	// system("gnuplot delta.gp");
+	system("gnuplot delta.gp");
 }

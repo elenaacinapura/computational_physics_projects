@@ -32,7 +32,7 @@ void execute_numerov(double x[], double phi[], double dx, int dim, double F(doub
 }
 
 double calculate_delta(double x0, double phiF[], double phiB[], double dx, int dimF, int dimB, double F(double, void *), void *p) {
-	return 1.0 / dx * (phiF[dimF - 2] + phiB[dimB - 2] - phiF[dimB - 1] * (2.0 + dx * F(x0, p)));
+	return 1.0 / dx * (phiF[dimF - 2] + phiB[dimB - 2] - phiF[dimF - 1] * (2.0 + dx *dx * F(x0, p)));
 }
 
 double Delta_E_cosh(double E, void *param) {
@@ -42,7 +42,7 @@ double Delta_E_cosh(double E, void *param) {
 	dx = p->dx;
 	x0 = p->x0;
 	a = p->a;
-	A = p->a;
+	A = p->A;
 	B = p->B;
 	/* Create arrays */
 	int dimF = (int)ceil((L + x0) / dx) + 1;
