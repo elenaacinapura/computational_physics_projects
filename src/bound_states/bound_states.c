@@ -21,7 +21,7 @@ int main() {
 	double m = 20 * 1.66e-27;
 	double a;
 	if (potential_type == 0) {
-		double xi = 0.05;
+		double xi = 0.005;
 		a = 2.0 / xi;
 	} else if (potential_type == 1) {
 		a = 2.0 * m * s * s * eps / (pow(hbar, 2));
@@ -93,5 +93,4 @@ int main() {
 	printf("\nNumber of bound states found: %d\n", cnt_bound);
 	fclose(file);
 
-	system("gnuplot delta.gp");
 }

@@ -12,3 +12,9 @@ add_custom_target(run-bound
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/delta.gp
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+     add_custom_target(plot-bound
+     COMMAND gnuplot delta.gp
+     DEPENDS delta.gp
+     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+ )
