@@ -34,6 +34,7 @@ void execute_numerov (double x[], double u[], int dim, double dx, double F (doub
     }
 }
 
+
 double find_delta (double r1, double r2, double u1, double u2, int l, double k) {
     double K = u2*r1/(u1*r2);
     return atan((gsl_sf_bessel_jl(l, k*r2) - K*gsl_sf_bessel_jl(l, k*r1)) / (gsl_sf_bessel_yl(l, k*r2) - K * gsl_sf_bessel_yl(l, k*r1)));
