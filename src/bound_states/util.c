@@ -10,6 +10,12 @@ double V_cosh(double x, void *param){
 	return -1.0/(pow(cosh(x), 4));
 }
 
+double V_lj(double r, void *param) {
+	Params_lj *p = (Params_lj *)param;
+	int l = p->l;
+	return 4.0*(pow(r, -12) - pow(r, -6)) + (double)(l*(l+1))/(r*r);
+}
+
 double F_cosh(double x, void *param) {
 	Params_cosh *p = (Params_cosh *)param;
 	double a = p->a;

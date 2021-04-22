@@ -12,7 +12,7 @@ int main() {
 		0 for hard sphere
 		1 for lennard-jones
 	*/
-	int potential_type = 0;
+	int potential_type = 1;
 	/* Parameters */
 	double kB = 1.38e-23;
 	double eps = 35.7 * kB;

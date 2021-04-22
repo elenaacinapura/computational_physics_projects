@@ -17,6 +17,8 @@ typedef struct Params_delta {
 
 double V_cosh(double x, void *param);
 
+double V_lj(double r, void *param);
+
 double F_cosh (double x, void *param);
 
 double F_lj(double r, void *param);
