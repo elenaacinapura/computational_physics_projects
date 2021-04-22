@@ -19,9 +19,9 @@ int main() {
 	double s = 2.79e-10;
 	double hbar = 1.05e-34;
 	double m = 20 * 1.66e-27;
-	double a;
+	double a, xi;
 	if (potential_type == 0) {
-		double xi = 0.005;
+		xi = 0.01;
 		a = 2.0 / xi;
 	} else if (potential_type == 1) {
 		a = 2.0 * m * s * s * eps / (pow(hbar, 2));
@@ -58,11 +58,12 @@ int main() {
 	FILE *file;
 	file = fopen("delta.csv", "w");
 	assert(file != NULL);
+	printf("------------------------------------------------\nDELTA METHOD\nSearching bound energies for xi = %.3lf\n\n", xi);
 
 	double E = E_start + dE;
-	double delta;
-	int first_time = 1;
+	double delta, delta_old;
 	int cnt_bound = 0;
+	int cnt = 0;
 	while (E < E_end) {
 		double delta_new;
 		if (potential_type == 0) {
@@ -74,23 +75,27 @@ int main() {
 		fprint_double(file, E);
 		fprint_double(file, delta_new);
 		fprintf(file, "\n");
-		if (!first_time) {
+		if (cnt > 1) {
 			if (delta_new * delta <= 0.0) {
-				double E_bound;
-				if (potential_type == 0) {
-					E_bound = zero_bisection(Delta_E_cosh, E - dE, E, &p);
-				} else if (potential_type == 1) {
-					E_bound = zero_bisection(Delta_E_lj, E - dE, E, &p);
+				if (delta_new > delta && delta > delta_old || delta_new < delta && delta < delta_old) {
+					double E_bound;
+					if (potential_type == 0) {
+						E_bound = zero_bisection(Delta_E_cosh, E - dE, E, &p);
+					} else if (potential_type == 1) {
+						E_bound = zero_bisection(Delta_E_lj, E - dE, E, &p);
+					}
+					printf("E%d = %lf\n", cnt_bound, E_bound);
+					cnt_bound++;
 				}
-				printf("New bound state found with E = %lf\n", E_bound);
-				cnt_bound++;
 			}
 		}
+		delta_old = delta;
 		delta = delta_new;
 		E += dE;
-		first_time = 0;
+		cnt++;
 	}
 	printf("\nNumber of bound states found: %d\n", cnt_bound);
+	printf("------------------------------------------------\n");
 	fclose(file);
 
 }

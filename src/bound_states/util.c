@@ -6,6 +6,10 @@
 #include <print_routines.h>
 #include <assert.h>
 
+double V_cosh(double x, void *param){
+	return -1.0/(pow(cosh(x), 4));
+}
+
 double F_cosh(double x, void *param) {
 	Params_cosh *p = (Params_cosh *)param;
 	double a = p->a;

@@ -2,7 +2,7 @@
 #define __BOUND_STATES_UTIL_H__
 
 typedef struct Params_cosh {
-    double a, E;
+    double a, E;    /* a = 2 m s^2 V0 / hbar^2 */
 } Params_cosh;
 
 typedef struct Params_lj {
@@ -10,11 +10,12 @@ typedef struct Params_lj {
     int l;
 } Params_lj;
 
-
 typedef struct Params_delta {
     double L, dx, x0, a, A, B;
     int l;
 } Params_delta;
+
+double V_cosh(double x, void *param);
 
 double F_cosh (double x, void *param);
 
