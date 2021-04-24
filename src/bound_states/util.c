@@ -5,33 +5,9 @@
 #include <math.h>
 #include <print_routines.h>
 #include <assert.h>
-
-double V_cosh(double x, void *param){
-	return -1.0/(pow(cosh(x), 4));
-}
-
-double V_lj(double r, void *param) {
-	Params_lj *p = (Params_lj *)param;
-	int l = p->l;
-	return 4.0*(pow(r, -12) - pow(r, -6)) + (double)(l*(l+1))/(r*r);
-}
-
-double F_cosh(double x, void *param) {
-	Params_cosh *p = (Params_cosh *)param;
-	double a = p->a;
-	double E = p->E;
-	return -a * (pow(cosh(x), -4) + E);
-}
-
-double F_lj(double r, void *param) {
-    Params_lj *p = (Params_lj *)param;
-	double a = p->a;
-    double E = p->E;
-    int l = p->l;
-    assert(r != 0.0);
-    return a*4.0*(pow(r, -12) - pow(r, -6)) + (double)(l*(l+1))/(r*r) - a*E;
-}
-
+/******************************************/
+/* Routines */
+/******************************************/
 void execute_numerov(double x[], double phi[], double dx, int dim, double F(double, void *), void *p) {
 	int i = 2;
 	do {
@@ -45,7 +21,24 @@ double calculate_delta(double x0, double phiF[], double phiB[], double dx, int d
 	return 1.0 / dx * (phiF[dimF - 2] + phiB[dimB - 2] - phiF[dimF - 1] * (2.0 + dx *dx * F(x0, p)));
 }
 
+/******************************************/
+/* Cosh potential specific functions */
+/******************************************/
+
+double V_cosh(double x, void *param){
+	return -1.0/(pow(cosh(x), 4));
+}
+
+
+double F_cosh(double x, void *param) {
+	Params_cosh *p = (Params_cosh *)param;
+	double a = p->a;
+	double E = p->E;
+	return -a * (pow(cosh(x), -4) + E);
+}
+
 double Delta_E_cosh(double E, void *param) {
+	/* Extract parameters */
 	Params_delta *p = (Params_delta *)param;
 	double L, dx, x0, a, A, B;
 	L = p->L;
@@ -60,9 +53,11 @@ double Delta_E_cosh(double E, void *param) {
 	double xF[dimF], xB[dimB];
 	double phiF[dimF], phiB[dimB];
 
-	double k = sqrt(a * (-E));
-	Params_cosh param_numerov = {a, E};
+	Params_cosh param_numerov;
+	param_numerov.a = a;
+	param_numerov.E = E;
 
+	double k = sqrt(a * (-E));
 	/* phiF */
 	xF[0] = -L;
 	xF[1] = -L + dx;
@@ -81,11 +76,30 @@ double Delta_E_cosh(double E, void *param) {
 		phiB[i] *= R;
 	}
 
-    double delta  = calculate_delta(x0, phiF, phiB, dx, dimF, dimB, F_cosh, &p);
+    double delta  = calculate_delta(x0, phiF, phiB, dx, dimF, dimB, F_cosh, &param_numerov);
 
     return delta;
 }
 
+/*************************************************/
+/* Lennard Jones potential specific functions */
+/*************************************************/
+
+double V_lj(double r, void *param) {
+	Params_lj *p = (Params_lj *)param;
+	int l = p->l;
+	return 4.0*(pow(r, -12) - pow(r, -6)) + (double)(l*(l+1))/(r*r);
+}
+
+double F_lj(double r, void *param) {
+    Params_lj *p = (Params_lj *)param;
+	double a = p->a;
+    double E = p->E;
+    int l = p->l;
+    assert(r != 0.0);
+
+    return a*4.0*(pow(r, -12) - pow(r, -6)) + (double)(l*(l+1))/(r*r) - a*E;
+}
 double Delta_E_lj(double E, void *param) {
 	Params_delta *p = (Params_delta *)param;
 	double L, dx, x0, a, A, B;
@@ -93,7 +107,7 @@ double Delta_E_lj(double E, void *param) {
 	dx = p->dx;
 	x0 = p->x0;
 	a = p->a;
-	A = p->a;
+	A = p->A;
 	B = p->B;
     int l = p->l;
 	/* Create arrays */
@@ -109,7 +123,7 @@ double Delta_E_lj(double E, void *param) {
     param_numerov.l = l;
 
 	/* phiF */
-    double r0 = 1.0;
+    double r0 = 0.7;
 	xF[0] = r0;
 	xF[1] = r0 + dx;
 	phiF[0] = A * exp(-sqrt(4.0*a/25.0) * pow(r0, -5));
@@ -118,6 +132,7 @@ double Delta_E_lj(double E, void *param) {
     // for (int i = 0; i < dimF; i++) {
     //     printf("%lf\t%lf\n", xF[i], phiF[i]);
     // }
+
 	/* phiB */
 	xB[0] = L;
 	xB[1] = L - dx;
@@ -133,7 +148,7 @@ double Delta_E_lj(double E, void *param) {
 		phiB[i] *= R;
 	}
 
-    double delta  = calculate_delta(x0, phiF, phiB, dx, dimF, dimB, F_lj, &p);
+    double delta  = calculate_delta(x0, phiF, phiB, dx, dimF, dimB, F_lj, &param_numerov);
 
     return delta;
 }
