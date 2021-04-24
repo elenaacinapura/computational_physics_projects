@@ -88,7 +88,10 @@ double Delta_E_cosh(double E, void *param) {
 double V_lj(double r, void *param) {
 	Params_lj *p = (Params_lj *)param;
 	int l = p->l;
-	return 4.0*(pow(r, -12) - pow(r, -6)) + (double)(l*(l+1))/(r*r);
+	double a = p->a;
+	double xi = 2.0/a;
+
+	return 4.0*(pow(r, -12) - pow(r, -6)) + xi*(double)(l*(l+1))/(r*r);
 }
 
 double F_lj(double r, void *param) {

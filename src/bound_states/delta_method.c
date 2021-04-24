@@ -86,7 +86,7 @@ int main() {
 
 	a = 2.0 * m * s * s * eps / (pow(hbar, 2));
 	xi = 2.0 / a;
-	int l = 0;
+	int l = 1;
 
 	L = 3.0;
 	x0 = 1.1;
