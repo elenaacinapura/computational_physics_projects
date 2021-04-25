@@ -114,7 +114,8 @@ double Delta_E_lj(double E, void *param) {
 	B = p->B;
     int l = p->l;
 	/* Create arrays */
-	int dimF = (int)ceil(x0 / dx) + 1;
+    double r0 = 0.7;	/* the point from where I start for lennard jones */
+	int dimF = (int)ceil((x0 - r0)/ dx) + 1;	/* x0 is the meeting point */
 	int dimB = (int)ceil((L - x0) / dx) + 1;
 	double xF[dimF], xB[dimB];
 	double phiF[dimF], phiB[dimB];
@@ -126,7 +127,6 @@ double Delta_E_lj(double E, void *param) {
     param_numerov.l = l;
 
 	/* phiF */
-    double r0 = 0.7;
 	xF[0] = r0;
 	xF[1] = r0 + dx;
 	phiF[0] = A * exp(-sqrt(4.0*a/25.0) * pow(r0, -5));
