@@ -6,6 +6,7 @@ data = pd.read_csv('universe.csv', delimiter='\t')
 t = data['t'].to_numpy()
 a = data['a'].to_numpy()
 
+
 plt.figure('Universe')
 plt.plot(t, a)
 

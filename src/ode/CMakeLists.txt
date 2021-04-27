@@ -9,6 +9,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/universe.py
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(run-universe
-    COMMAND universe && python universe.py
+    COMMAND universe && python universe.py 2> grep -v 'libGL' 
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
