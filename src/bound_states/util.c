@@ -155,3 +155,15 @@ double Delta_E_lj(double E, void *param) {
 
     return delta;
 }
+
+/*************************************************/
+/* Periodic potential specific functions */
+/*************************************************/
+
+double V_periodic (double x, void *param) {
+	if (x < 0.3) {
+		return -1.0;
+	}
+	return 0.0;
+
+}

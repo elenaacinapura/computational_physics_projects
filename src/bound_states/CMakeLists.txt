@@ -1,3 +1,6 @@
+#############################
+# DELTA METHOD
+#############################
 add_executable(bound-delta delta_method.c util.c)
 
 target_compile_options(bound-delta PRIVATE -Wall -O3 -march=native -ffast-math)
@@ -19,6 +22,9 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/delta.gp
      WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
 
+#############################
+# DIAG METHOD
+#############################
 add_executable(bound-diag diag_method.c util.c)
 
 target_compile_options(bound-diag PRIVATE -O3 -march=native -ffast-math)
@@ -29,4 +35,29 @@ add_custom_target(run-bound-diag
     COMMAND bound-diag
     DEPENDS bound-diag
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+
+#############################
+# DIAG PERIODIC POTENTIAL
+#############################
+
+add_executable(bound-diag-period diag_periodic.c util.c)
+
+target_compile_options(bound-diag-period PRIVATE -O3 -march=native -ffast-math)
+
+target_link_libraries(bound-diag-period compphy-lib)
+
+add_custom_target(run-bound-diag-period
+    COMMAND bound-diag-period
+    DEPENDS bound-diag-period
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/periodic.gp
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+     add_custom_target(plot-periodic
+     COMMAND gnuplot periodic.gp
+     DEPENDS periodic.gp
+     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )

@@ -13,3 +13,4 @@ set title 'Lennard Jones potential'
 set yrange [-20:20]
 plot 'delta_lj.csv' using 1:2 w lines notitle
 pause -1
+

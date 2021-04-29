@@ -10,6 +10,10 @@ typedef struct Params_lj {
     int l;
 } Params_lj;
 
+typedef struct Params_periodic {
+    double a, E;
+} Params_periodic;
+
 typedef struct Params_delta {
     double L, dx, x0, a, A, B;
     int l;
@@ -22,6 +26,8 @@ double V_lj(double r, void *param);
 double F_cosh (double x, void *param);
 
 double F_lj(double r, void *param);
+
+double V_periodic (double x, void *param);
 
 void execute_numerov(double x[], double phi [], double dx, int dim, double F (double, void*), void *p);
 
