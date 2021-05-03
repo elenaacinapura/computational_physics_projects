@@ -14,7 +14,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/gravity.py
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(plot-gravity
-    COMMAND python gravity.py
+    COMMAND python gravity.py 2>&1 | grep -v 'libGL'
     DEPENDS gravity.py
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )

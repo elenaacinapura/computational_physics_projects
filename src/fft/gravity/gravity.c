@@ -3,7 +3,8 @@
 #include <gsl/gsl_fft_complex.h>
 #include <math.h>
 #include <print_routines.h>
-#define N 256
+
+const int N = 256;
 
 const double g = 9.81;
 
@@ -19,12 +20,18 @@ double group_velocity(double k_max, double h);
 
 int main() {
 	/* Parameters */
-	double T = 10;
+	double T = 10.0;
 	double dt = 0.02;
 	double h = 10.0;
-	double L = 30.0;
+	double L = 20.0;
 	double dx = L / N;
 	double dk = 2.0 * M_PI / L;
+
+	FILE *f_par;
+	f_par = fopen("parameters.csv", "w");
+	assert(f_par != NULL);
+	fprintf(f_par, "N\tT\tdt\tL\n%d\t%lf\t%lf\t%lf\n", N, T, dt, L);
+	fclose(f_par);
 
 	/* Structures */
 	double f[2 * N];
@@ -44,29 +51,32 @@ int main() {
 	double t = 0.0;
 	int start = 1;
 	double f_max, v;
-	int k_max;
+	double k_max;
 
 	while (t < T) {
 		gsl_fft_complex_radix2_forward(f, 1, N);
 
+		/* Find k_max */
 		if (start) {
 			start = 0;
 			f_max = cabs(f[0] + I * f[1]);
 			for (int i = 0; i < N; i++) {
-				int k = dk * (i <= N / 2 ? i : i - N);
+				double k = dk * (i <= N / 2 ? i : i - N);
 				complex double f_curr = f[2 * i] + I * f[2 * i + 1];
 				if (cabs(f_curr) > f_max) {
 					f_max = cabs(f_curr);
 					k_max = k;
 				}
 			}
-			v = group_velocity(k_max * dk, h);
+			v = group_velocity(k_max, h);
 		}
 
+		/* Evolution */
 		for (int i = 0; i < N; i++) {
-			int k = dk * (i <= N / 2 ? i : i - N);
+			int k = dk * (i <= N / 2 ? i : i - N) - k_max;
+			// int k = dk * (i <= N / 2 ? i : i - N);
 			double om = omega(k, h);
-			/* Real and imag parts of e^iwt */
+			/* Real and imag parts of e^-iwt */
 			double c = cos(om * t);
 			double s = sin(-om * t);
 
@@ -81,7 +91,8 @@ int main() {
 		gsl_fft_complex_radix2_inverse(f, 1, N);
 
 		for (int n = 0; n < N; n++) {
-			fprint_double(file, x[n] -v*t);
+			// double xx = x[n] - v*t - rint((x[n] - v*t)/(2.0*L)); 
+			fprint_double(file, x[n]);
 			fprint_double_newline(file, f[2 * n]);
 		}
 
@@ -89,7 +100,7 @@ int main() {
 	}
 
 	fclose(file);
-	printf("k_max_index = %d\nk_max = %lf\ngroup velocity = %lf\n", k_max, k_max * dk, v);
+	printf("k_max = %lf\ngroup velocity = %lf\n", k_max, v);
 }
 
 /***********************************************
