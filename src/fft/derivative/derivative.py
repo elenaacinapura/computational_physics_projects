@@ -15,7 +15,6 @@ data = pd.read_csv('derivative.csv', delimiter='\t')
 d = data['f'].to_numpy()
 
 plt.figure('Derivative')
-plt.ylim(0, 10)
 plt.plot(x, f, c = 'r', label='f')
 plt.plot(x, d, c='b', label='derivative')
 plt.xlabel('x')
