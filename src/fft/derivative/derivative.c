@@ -5,13 +5,13 @@
 #include <print_routines.h>
 
 double func(double x) {
-	return sin(x);
+	return cos(x);
 }
 
 int main() {
     /* Parameters */
 	int N = 512;
-	double L = 50.0;
+	double L = 100.0;
 	double dx = L / N;
 	double dk = 2.0 * M_PI / L;
 

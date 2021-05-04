@@ -4,9 +4,9 @@
 #include <math.h>
 #include <print_routines.h>
 
-const int N = 256;
+#define MOVING_FRAME 0
 
-const double g = 9.81;
+const int N = 256;
 
 double omega(double k, double h);
 
@@ -20,12 +20,16 @@ double group_velocity(double k_max, double h);
 
 int main() {
 	/* Parameters */
-	double T = 10.0;
-	double dt = 0.02;
+	double T = 1000.0;
+	double dt = 0.5;
 	double h = 10.0;
-	double L = 20.0;
+	double L = 50.0;
 	double dx = L / N;
 	double dk = 2.0 * M_PI / L;
+
+	/* Welcome */
+	printf("\n***************************************************\n");
+	printf("A wave package in a gravitational field\n\nCalculating...\n\n");
 
 	FILE *f_par;
 	f_par = fopen("parameters.csv", "w");
@@ -48,59 +52,56 @@ int main() {
 		f[2 * i + 1] = cimag(f0(x[i], L));
 	}
 
-	double t = 0.0;
-	int start = 1;
-	double f_max, v;
+	gsl_fft_complex_radix2_forward(f, 1, N);
+
+	/* Find k_max */
 	double k_max;
-
-	while (t < T) {
-		gsl_fft_complex_radix2_forward(f, 1, N);
-
-		/* Find k_max */
-		if (start) {
-			start = 0;
-			f_max = cabs(f[0] + I * f[1]);
-			for (int i = 0; i < N; i++) {
-				double k = dk * (i <= N / 2 ? i : i - N);
-				complex double f_curr = f[2 * i] + I * f[2 * i + 1];
-				if (cabs(f_curr) > f_max) {
-					f_max = cabs(f_curr);
-					k_max = k;
-				}
-			}
-			v = group_velocity(k_max, h);
+	double f_max = cabs(f[0] + I * f[1]);
+	for (int i = 0; i < N; i++) {
+		double k = dk * (i <= N / 2 ? i : i - N);
+		complex double f_curr = f[2 * i] + I * f[2 * i + 1];
+		if (cabs(f_curr) > f_max) {
+			f_max = cabs(f_curr);
+			k_max = k;
 		}
+	}
+	double v = group_velocity(k_max, h);
 
+	double t = 0.0;
+	while (t < T) {
 		/* Evolution */
 		for (int i = 0; i < N; i++) {
-			int k = dk * (i <= N / 2 ? i : i - N) - k_max;
-			// int k = dk * (i <= N / 2 ? i : i - N);
+			int k = dk * (i <= N / 2 ? i : i - N);
 			double om = omega(k, h);
-			/* Real and imag parts of e^-iwt */
-			double c = cos(om * t);
-			double s = sin(-om * t);
-
+		
 			double fre = f[2 * i];
 			double fim = f[2 * i + 1];
+			complex double f_c = fre + I * fim;
+			f_c *= cexp(-I * om * dt);
+			if (MOVING_FRAME) {
+				f_c *= cexp(I * k * v*dt);
+			}
 
-			/* Complex multiplication */
-			f[2 * i] = fre * c - fim * s;
-			f[2 * i + 1] = fre * s + fim * c;
+			f[2 * i] = creal(f_c);
+			f[2 * i + 1] = cimag(f_c);
 		}
 
 		gsl_fft_complex_radix2_inverse(f, 1, N);
 
 		for (int n = 0; n < N; n++) {
-			// double xx = x[n] - v*t - rint((x[n] - v*t)/(2.0*L)); 
 			fprint_double(file, x[n]);
 			fprint_double_newline(file, f[2 * n]);
 		}
+
+		gsl_fft_complex_radix2_forward(f, 1, N);
 
 		t += dt;
 	}
 
 	fclose(file);
-	printf("k_max = %lf\ngroup velocity = %lf\n", k_max, v);
+	printf("Simulation ended successfully.\n\n");
+	printf("Results:\nk_max = %lf\nGroup velocity = %lf\n", k_max, v);
+	printf("\n***************************************************\n");
 }
 
 /***********************************************
@@ -112,7 +113,7 @@ double omega(double k, double h) {
 }
 
 complex double f0(double x, double L) {
-	double x0 = L * 0.5;
+	double x0 = L * 0.3;
 	return exp(-(x - x0) * (x - x0) / 8.0) * cexp(I * 2 * M_PI * (x - x0));
 }
 
