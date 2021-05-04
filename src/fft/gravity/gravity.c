@@ -44,7 +44,7 @@ int main() {
 
 	FILE *file;
 	file = fopen("f.csv", "w");
-	assert(f != NULL);
+	assert(file != NULL);
 	fprintf(file, "x\tf\n");
 
 	for (int i = 0; i < N; i++) {
