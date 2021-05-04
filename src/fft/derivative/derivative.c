@@ -45,7 +45,7 @@ int main() {
     for (int k = 0; k < N; k++) {
         complex double K =  I * dk * (k <= N / 2 ? k : k - N);
         complex double f_complex = f[2*k] + I * f[2*k + 1];
-        f_complex *= K;
+        f_complex *= K; /* multiply for K^2 to have the second derivative */
         f[2*k] = creal(f_complex);
         f[2*k + 1] = cimag(f_complex);
     }
