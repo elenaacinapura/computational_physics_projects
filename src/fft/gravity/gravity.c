@@ -31,6 +31,7 @@ int main() {
 	printf("\n***************************************************\n");
 	printf("A wave package in a gravitational field\n\nCalculating...\n\n");
 
+	/* Print parameters */
 	FILE *f_par;
 	f_par = fopen("parameters.csv", "w");
 	assert(f_par != NULL);
@@ -73,26 +74,26 @@ int main() {
 		for (int i = 0; i < N; i++) {
 			int k = dk * (i <= N / 2 ? i : i - N);
 			double om = omega(k, h);
-		
+
 			double fre = f[2 * i];
 			double fim = f[2 * i + 1];
 			complex double f_c = fre + I * fim;
 			f_c *= cexp(-I * om * dt);
 			if (MOVING_FRAME) {
-				f_c *= cexp(I * k * v*dt);
+				f_c *= cexp(I * k * v * dt);
 			}
-
 			f[2 * i] = creal(f_c);
 			f[2 * i + 1] = cimag(f_c);
 		}
-
+		/* Antitransform */
 		gsl_fft_complex_radix2_inverse(f, 1, N);
 
+		/* Print */
 		for (int n = 0; n < N; n++) {
 			fprint_double(file, x[n]);
 			fprint_double_newline(file, f[2 * n]);
 		}
-
+		/* Transform */
 		gsl_fft_complex_radix2_forward(f, 1, N);
 
 		t += dt;
