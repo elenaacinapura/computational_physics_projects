@@ -5,8 +5,13 @@
 #include <print_routines.h>
 
 const int N = 256;
-const double L = 10.0;
+const double L = 30.0;
 const int T = 1000;
+
+complex double f0(double x, double k) {
+	double x0 = L * 0.3;
+	return exp(-(x - x0) * (x - x0) / 8.0) * cexp(I * k * (x - x0));
+}
 
 double V(double x) {
 	if (fabs(x - L / 2) < 1.0) {
@@ -18,7 +23,7 @@ double V(double x) {
 int main() {
 	double dx = L / N;
 	double dk = 2.0 * M_PI / L;
-	double dt = 5e-2;
+	double dt = 0.1;
 
 	double alpha = 0.025;
 	double E = 1.0;
@@ -50,8 +55,8 @@ int main() {
 		xi[n] = cexp(I * alpha * dt * Delta_k_2);
 
 		/* Free particle */
-		phi[2 * n] = cos(k_E * x[n]);
-		phi[2 * n + 1] = sin(I * k_E * x[n]);
+		phi[2 * n] = creal(f0(x[n], k_E));
+		phi[2 * n + 1] = cimag(f0(x[n], k_E));
 	}
 
 	FILE *file;

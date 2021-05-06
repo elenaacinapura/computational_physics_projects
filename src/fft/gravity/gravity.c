@@ -4,15 +4,18 @@
 #include <math.h>
 #include <print_routines.h>
 
-#define MOVING_FRAME 0
+#define MOVING_FRAME 1
 
-const int N = 256;
+const int N = 512;
+const double L = 100.0;
+const double g = 9.8;
+const double h = 10.0;
 
-double omega(double k, double h);
+double omega(double k);
 
-complex double f0(double x, double L);
+complex double f0(double x);
 
-double group_velocity(double k_max, double h);
+double group_velocity(double k_max);
 
 /***********************************************
  * MAIN
@@ -22,8 +25,6 @@ int main() {
 	/* Parameters */
 	double T = 1000.0;
 	double dt = 0.5;
-	double h = 10.0;
-	double L = 50.0;
 	double dx = L / N;
 	double dk = 2.0 * M_PI / L;
 
@@ -31,7 +32,7 @@ int main() {
 	printf("\n***************************************************\n");
 	printf("A wave package in a gravitational field\n\nCalculating...\n\n");
 
-	/* Print parameters */
+	/* Print parameters to file */
 	FILE *f_par;
 	f_par = fopen("parameters.csv", "w");
 	assert(f_par != NULL);
@@ -47,15 +48,15 @@ int main() {
 	assert(file != NULL);
 	fprintf(file, "x\tf\n");
 
-	for (int i = 0; i < N; i++) {
-		x[i] = i * dx;
-		f[2 * i] = creal(f0(x[i], L));
-		f[2 * i + 1] = cimag(f0(x[i], L));
+	for (int n = 0; n < N; n++) {
+		x[n] = (double)n * dx;
+		f[2 * n] = creal(f0(x[n]));
+		f[2 * n + 1] = cimag(f0(x[n]));
 	}
 
-	gsl_fft_complex_radix2_forward(f, 1, N);
 
 	/* Find k_max */
+	gsl_fft_complex_radix2_forward(f, 1, N);
 	double k_max;
 	double f_max = cabs(f[0] + I * f[1]);
 	for (int i = 0; i < N; i++) {
@@ -66,18 +67,35 @@ int main() {
 			k_max = k;
 		}
 	}
-	double v = group_velocity(k_max, h);
+	double v = group_velocity(k_max);
+
+	/* Evolution */
+	/* Start again from the beginning to avoid errors */
+	for (int n = 0; n < N; n++) {
+		x[n] = (double)n * dx;
+		f[2 * n] = creal(f0(x[n]));
+		f[2 * n + 1] = cimag(f0(x[n]));
+	}
 
 	double t = 0.0;
-	while (t < T) {
+	while (t <= T) {
+		/* Print f_n */
+		for (int n = 0; n < N; n++) {
+			fprint_double(file, x[n]);
+			fprint_double_newline(file, f[2 * n]);
+		}
+
+		/* Transform */
+		gsl_fft_complex_radix2_forward(f, 1, N);
+
 		/* Evolution */
 		for (int i = 0; i < N; i++) {
-			int k = dk * (i <= N / 2 ? i : i - N);
-			double om = omega(k, h);
+			double k = dk * (double)(i <= N / 2 ? i : i - N);
+			double om = omega(k);
 
-			double fre = f[2 * i];
-			double fim = f[2 * i + 1];
-			complex double f_c = fre + I * fim;
+			double f_re = f[2 * i];
+			double f_im = f[2 * i + 1];
+			complex double f_c = f_re + I * f_im;
 			f_c *= cexp(-I * om * dt);
 			if (MOVING_FRAME) {
 				f_c *= cexp(I * k * v * dt);
@@ -87,14 +105,6 @@ int main() {
 		}
 		/* Antitransform */
 		gsl_fft_complex_radix2_inverse(f, 1, N);
-
-		/* Print */
-		for (int n = 0; n < N; n++) {
-			fprint_double(file, x[n]);
-			fprint_double_newline(file, f[2 * n]);
-		}
-		/* Transform */
-		gsl_fft_complex_radix2_forward(f, 1, N);
 
 		t += dt;
 	}
@@ -109,16 +119,16 @@ int main() {
  * END OF MAIN
  ***********************************************/
 
-double omega(double k, double h) {
-	return sqrt(k * tanh(k * h));
+double omega(double k) {
+	return sqrt(k * g * tanh(k * h));
 }
 
-complex double f0(double x, double L) {
-	double x0 = L * 0.3;
+complex double f0(double x) {
+	double x0 = L * 0.5;
 	return exp(-(x - x0) * (x - x0) / 8.0) * cexp(I * 2 * M_PI * (x - x0));
 }
 
-double group_velocity(double k_max, double h) {
+double group_velocity(double k_max) {
 	double eps = 1e-4;
-	return 0.5 / eps * (omega(k_max + eps, h) - omega(k_max - eps, h));
+	return 0.5 / eps * (omega(k_max + eps) - omega(k_max - eps));
 }

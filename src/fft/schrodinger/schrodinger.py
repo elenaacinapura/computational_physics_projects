@@ -30,5 +30,5 @@ def animate (i):
     ax1.plot(x, V)
     return ax1
 
-a = animation.FuncAnimation(fig, animate, frames=np.arange(T), interval=100)
+a = animation.FuncAnimation(fig, animate, frames=np.arange(T), interval=1)
 plt.show()

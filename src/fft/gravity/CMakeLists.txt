@@ -18,3 +18,12 @@ add_custom_target(plot-gravity
     DEPENDS gravity.py
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/gravity_just_two_frames.py
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_target(plot-gravity-2
+    COMMAND python gravity_just_two_frames.py 2>&1 | grep -v 'libGL'
+    DEPENDS gravity_just_two_frames.py
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)

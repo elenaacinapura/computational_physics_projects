@@ -28,5 +28,5 @@ def animate (i):
     ax1.plot(xframe, fframe)
     return ax1
 
-a = animation.FuncAnimation(fig, animate, frames=np.arange(int(T/dt)), interval=100)
+a = animation.FuncAnimation(fig, animate, frames=np.arange(int(T/dt)), interval=10)
 plt.show()
