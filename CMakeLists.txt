@@ -14,4 +14,8 @@ add_subdirectory(src/dipolar_field)
 add_subdirectory(src/quantum_scattering)
 add_subdirectory(src/bound_states)
 add_subdirectory(src/ode)
+<<<<<<< HEAD
 add_subdirectory(src/sun)
+=======
+add_subdirectory(src/fft)
+>>>>>>> 81f4b0f82cb5ff912d93e2491f939f0ea6336044
