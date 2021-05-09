@@ -20,7 +20,7 @@ double h(double r) {
 int main() {
 	double dr = R / N;
 	double r[N];
-	double S[2 * N];
+	double S[N];
 
 	for (int n = 0; n < N; n++) {
 		r[n] = (double)n * dr;
@@ -28,8 +28,8 @@ int main() {
 		if (isnan(h(r[n]))) {
 			printf("nan value found in h(r) for n = %d ", n);
 		}
-		S[2 * n] = h(r[n]);
-		S[2 * n + 1] = 0.0;
+		S[n] = h(r[n]);
+
 	}
 	fft_radial_forward(S, N, R);
 
@@ -41,10 +41,10 @@ int main() {
 
 	for (int n = 0; n < N; n++) {
 		double k = M_PI / R * n;
-		S[2 * n] = S[2 * n] * rho + 1.0;
+		S[n] = S[n] * rho + 1.0;
 
 		fprint_double(file, k);
-		fprint_double_newline(file, S[2 * n]);
+		fprint_double_newline(file, S[n]);
 	}
 	fclose(file);
 }
