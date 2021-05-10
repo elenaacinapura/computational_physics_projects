@@ -1,6 +1,6 @@
 add_executable(percus percus_yevick.c)
 
-target_compile_options(percus PRIVATE -O3 -march=native -ffast-math)
+target_compile_options(percus PRIVATE -O3 -march=native)
 
 target_link_libraries(percus compphy-lib gsl)
 
