@@ -14,8 +14,6 @@ double h(double r) {
 	if (fabs(r) < 1e-5) {
 		return -1.0;
 	}
-	struct Empty {
-	} s;
 	double V = 4.0 * (pow(r, -12) - pow(r, -6));
 	return exp(-V/T) - 1.0;
 }

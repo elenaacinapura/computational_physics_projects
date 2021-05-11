@@ -31,7 +31,7 @@ int main() {
 	init(r, h, c);
 
 	for (int cnt = 0; cnt < N_REPS; cnt++) {
-		double c_t[N], h_t[N], c_new[N], h_new[N];
+		double c_t[N], h_t[N], c_new[N], h_new[N]; /* transforms and new vectors */
 		vec_copy(N, c, c_t);
 		vec_copy(N, h, h_t);
 
@@ -47,12 +47,8 @@ int main() {
 		}
 
 		fft_radial_inverse(F, N, R);
-		// fprint_array(stdout, F, 1, N);
 
 		for (int i = 0; i < N; i++) {
-			// double c_old = c[i];
-			// double h_old = h[i];
-
 			c_new[i] = (F[i] + 1.0) * h0(r[i]);
 			h_new[i] = c_new[i] + F[i];
 
@@ -60,7 +56,7 @@ int main() {
 			h_new[i] = alpha * h_new[i] + (1.0 - alpha) * h[i];
 		}
 		double nor = norm(h_new, h);
-		fprint_double_newline(stdout, nor);
+		// fprint_double_newline(stdout, nor);
 
 		vec_copy(N, h_new, h);
 		vec_copy(N, c_new, c);
@@ -82,8 +78,6 @@ double h0(double r) {
 	if (r < 1e-5) {
 		return -1.0;
 	}
-	struct Empty {
-	} s;
 	double V = 4.0 * (pow(r, -12) - pow(r, -6));
 	return exp(-V / T) - 1.0;
 }
