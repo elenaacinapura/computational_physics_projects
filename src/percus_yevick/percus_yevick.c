@@ -9,8 +9,8 @@
 #include <stdlib.h>
 
 /*======================= CONSTANTS ========================*/
-const int N = 1024;
-const double R = 6.0;
+const int N = 2048;
+const double R = 10.0;
 const double rho_target = 0.5;
 const double T = 0.5;
 const double alpha = 0.01;
@@ -103,7 +103,7 @@ int main() {
 		} while (norm > 1e-6);
 		rho += d_rho;
 	}
-	printf("============================================================\n");
+	printf("Calculations ended successfully!\n\n");
 	/*======================= PRESSURE AND INTERNAL ENERGY ========================*/
 	double g[N];
 	double P, U;
@@ -113,8 +113,8 @@ int main() {
 	P = pressure(r, g);
 	U = int_energy(r, g);
 	printf("Results of the calculations:\n");
-	printf("\tP = %lf\n\tU per particle = %lf\n\n", P, U);
-	printf("Calculations ended successfully!\n");
+	printf("\tP = %lf\n\tU per particle = %lf\n", P, U);
+	printf("============================================================\n");
 
 	/*======================= PRINT ========================*/
 	FILE* file;
