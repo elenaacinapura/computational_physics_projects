@@ -21,28 +21,44 @@ double h(double r) {
 /*============== MAIN ==============*/
 int main() {
 	double dr = R / N;
+	double dk = M_PI / R;
 	double r[N];
+	double K[N];
+	double k;
 	double S[N];
+	double S_integral[N];
+
 
 	for (int n = 0; n < N; n++) {
 		r[n] = (double)n * dr;
+		K[n] = n * dk;
 		S[n] = h(r[n]);
 
 	}
+	/* Calculate S(K) via transform */
 	fft_radial_forward(S, N, R);
+
+	/* Calculate S(K) via integral */
+	for (int k = 0; k < N; k++) {
+		double sum = 0.0;
+		for (int n = 0; n < N; n++) {
+			sum += 2.0 * h(r[n]) * r[n] / K[k] * sin(K[k] * r[n]);
+		}
+		S_integral[k] = sum;
+	}
 
 	FILE *file;
 	file = fopen("structure.csv", "w");
 	assert(file != NULL);
 
-	fprintf(file, "r\tS\n");
+	fprintf(file, "r\tS\tS_int\n");
 
 	for (int n = 0; n < N; n++) {
-		double k = M_PI / R * n;
 		S[n] = S[n] * rho + 1.0;
-
-		fprint_double(file, k);
-		fprint_double_newline(file, S[n]);
+		S_integral[n] = S_integral[n] * rho + 1.0;
+		fprint_double(file, K[n]);
+		fprint_double(file, S[n]);
+		fprint_double_newline(file, S_integral[n]);
 	}
 	fclose(file);
 }
