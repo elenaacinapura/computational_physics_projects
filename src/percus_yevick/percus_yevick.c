@@ -10,58 +10,85 @@
 
 /*============== CONSTANTS ==============*/
 const int N = 1024;
-const double R = 30.0;
-const double rho = 0.7;
+const double R = 6.0;
 const double T = 0.5;
-const double alpha = 0.1;
-const int N_REPS = 10;
+const double alpha = 0.01;
+const double rho_target = 0.5;
 
 /*============== FUNCTIONS HEADERS ==============*/
+/**
+ * Repulsive part of Lennard-Jones interaction
+ */
 double h0(double r);
+
+/**
+ * Initialize the vectors.
+ */
 double init(double r[], double h[], double c[]);
-double norm(double h_new[], double h_old[]);
+
+/**
+ * Calculate the distance between two functions.
+ */
+double Dist(double h_new[], double h_old[]);
 
 /*============== MAIN ==============*/
 int main() {
+	/* Welcome */
+	printf("============================================================\n");
+	printf("PERCUS - YEVICK SIMULATION\n");
+	printf("============================================================\n");
+	printf("Parameters of the simulation:\n");
+	printf("\tN = %d\n\tR = %.1lf\n\tT = %.1lf\n\trho = %.1lf\n\talpha = %.2lf\n", N, R, T, rho_target, alpha);
+	printf("\nCalculating...\n\n");
+	/* My vectors */
 	double r[N];
 	double h[N];
 	double c[N];
 	double F[N];
 
+	double rho_start = 0.1;
+	double d_rho = 0.001;
+
+	double norm;
+	
 	init(r, h, c);
+	double rho = rho_start;
+	while (rho < rho_target) {
+		do {
+			double c_t[N], h_t[N], c_new[N], h_new[N]; /* transforms and new vectors */
+			vec_copy(N, c, c_t);
+			vec_copy(N, h, h_t);
 
-	for (int cnt = 0; cnt < N_REPS; cnt++) {
-		double c_t[N], h_t[N], c_new[N], h_new[N]; /* transforms and new vectors */
-		vec_copy(N, c, c_t);
-		vec_copy(N, h, h_t);
+			fft_radial_forward(h_t, N, R);
+			fft_radial_forward(c_t, N, R);
 
-		fft_radial_forward(h_t, N, R);
-		fft_radial_forward(c_t, N, R);
-
-		for (int i = 0; i < N; i++) {
-			F[i] = h_t[i] * c_t[i] * rho * 2.0 * M_PI * R / N;
-			if (isnan(F[i])) {
-				printf("Nan value found in rep %d\n", cnt);
-				exit(0);
+			for (int i = 0; i < N; i++) {
+				F[i] = h_t[i] * c_t[i] * rho * 2.0 * M_PI * R / N;
+				assert(!isnan(F[i]));
 			}
-		}
 
-		fft_radial_inverse(F, N, R);
+			fft_radial_inverse(F, N, R);
 
-		for (int i = 0; i < N; i++) {
-			c_new[i] = (F[i] + 1.0) * h0(r[i]);
-			h_new[i] = c_new[i] + F[i];
+			for (int i = 0; i < N; i++) {
+				c_new[i] = (F[i] + 1.0) * h0(r[i]);
+				h_new[i] = c_new[i] + F[i];
 
-			c_new[i] = alpha * c_new[i] + (1.0 - alpha) * c[i];
-			h_new[i] = alpha * h_new[i] + (1.0 - alpha) * h[i];
-		}
-		double nor = norm(h_new, h);
-		// fprint_double_newline(stdout, nor);
+				c_new[i] = alpha * c_new[i] + (1.0 - alpha) * c[i];
+				h_new[i] = alpha * h_new[i] + (1.0 - alpha) * h[i];
+			}
 
-		vec_copy(N, h_new, h);
-		vec_copy(N, c_new, c);
+			norm = Dist(h_new, h);
+			// fprint_double_newline(stdout, norm);
+
+			vec_copy(N, h_new, h);
+			vec_copy(N, c_new, c);
+		} while (norm > 1e-6);
+		rho += d_rho;
 	}
+	printf("Calculations ended successfully!\n");
+	printf("============================================================\n");
 
+	/*======================= PRINT ========================*/
 	FILE* file;
 	file = fopen("percus.csv", "w");
 	fprintf(file, "r\tg\n");
@@ -71,6 +98,13 @@ int main() {
 		fprint_double_newline(file, h[i] + 1.0);
 	}
 	fclose(file);
+
+	FILE *f_par;
+	f_par = fopen("parameters.csv", "w");
+	fprintf(f_par, "rho\tT\n");
+	fprint_double(f_par, rho_target);
+	fprint_double_newline(f_par, T);
+	fclose(f_par);
 }
 
 /*============== FUNCTIONS ==============*/
@@ -78,7 +112,7 @@ double h0(double r) {
 	if (r < 1e-5) {
 		return -1.0;
 	}
-	double V = 4.0 * (pow(r, -12) - pow(r, -6));
+	double V = 4.0 * pow(r, -12);
 	return exp(-V / T) - 1.0;
 }
 double init(double r[], double h[], double c[]) {
@@ -88,7 +122,7 @@ double init(double r[], double h[], double c[]) {
 		c[n] = h[n];
 	}
 }
-double norm(double h_new[], double h_old[]) {
+double Dist(double h_new[], double h_old[]) {
 	double res = 0.0;
 	double dr = R / N;
 	for (int i = 0; i < N; i++) {
