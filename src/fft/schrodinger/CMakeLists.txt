@@ -1,6 +1,6 @@
 add_executable(schrodinger schrodinger.c)
 
-target_compile_options(schrodinger PRIVATE -O3 -march=native -ffast-math)
+target_compile_options(schrodinger PRIVATE -O3 -march=native)
 
 target_link_libraries(schrodinger compphy-lib gsl)
 
