@@ -7,14 +7,15 @@
 #include "util.h"
 
 double F_theta(double useless, double xi, void *p){
-    assert(xi > 0.0);
+    if (xi < EPS) {
+        return 0.0;
+    }
     Param *par = (Param *)p;
     double eta = par->eta;
     return -eta/(xi*xi);
 }
 
 double F_eta(double useless, double xi, void *p){
-    assert(xi > 0.0);
     Param *par = (Param *)p;
     double n = par->n;
     double theta = par->theta;

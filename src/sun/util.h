@@ -1,7 +1,7 @@
 #ifndef __SUN_H__
 #define __SUN_H__
 
-#define START 0.001
+#define START 0.0
 #define EPS 1e-4
 #define DIM_MAX (int)1e5
 

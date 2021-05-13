@@ -53,7 +53,7 @@ int main() {
 		rho_estimated = pow(xi_0, 3) / (4.0 * M_PI * integ);
 	} while (fabs(rho_estimated - rho_star) > 0.01);
     double alpha = R / xi_0;
-    double K = alpha * alpha * 4.0 * M_PI * G / ((n + 1) * pow(rho, 1.0/n - 1.0));
+    double K = alpha * alpha * 4.0 * M_PI * G / ((n + 1.0) * pow(rho, 1.0/n - 1.0));
     double P = K * pow(rho, (n + 1.0)/n);
 	printf("Calculations ended successfully!\n\n");
 	printf("Result of the calculations: \n\t n = %.3lf\n\t P = %lf billion bar\n", n, P/1e14);
