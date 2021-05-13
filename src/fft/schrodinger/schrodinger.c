@@ -7,11 +7,11 @@
 /*======================= CONSTANTS ========================*/
 const int N = 4096;
 const double L = 500.0;
-const int num_T = 2000;
-const double E = 2.0;
-double prof_param = 1.0;
+const int num_T = 5000;
+const double E = 0.5;
+double alpha = 0.025;
 
-/*======================= CONSTANTS ========================*/
+/*======================= FUNCTIONS HEADERS ========================*/
 complex double f0(double x, double k);
 double V(double x);
 
@@ -19,8 +19,12 @@ double V(double x);
 int main() {
 	/*======================= Welcome ========================*/
 	printf("\n=======================================================\n");
-	printf("Quantum particle on a 1D barrier\n\nCalculating...\n\n");
-
+	printf("Quantum particle on a 1D barrier\n");
+	printf("=======================================================\n");
+	printf("Parameters:\n");
+	printf("\t N = %d \n\t L = %.1lf \n\t Num_timesteps = %d \n\t E = %.1lf \n\t alpha = h_bar^2 / (2mV0a^2) = %lf\n", N, L, num_T, E, alpha);
+	
+	/*=========================================================*/
 	double dx = L / N;
 	double dk = 2.0 * M_PI / L;
 
@@ -29,15 +33,15 @@ int main() {
 	double complex xi[N];
 	double phi[2 * N];
 
-	double alpha = pow(prof_param, -2.0);
-	double dt = 1.0 / sqrt(E);
+	double dt = 0.1 / sqrt(E);
 	double k_E = sqrt(E / alpha);
 
 	double norm_start, norm_R, norm_T;
 	norm_start = 0.0;
 	norm_R = 0.0;
 	norm_T = 0.0;
-
+	printf("\t dt = %lf\n", dt);
+	printf("\nCalculating...\n\n");
 	/*======================= Initialize arrays ========================*/
 	for (int n = 0; n < N; n++) {
 		/* x */
@@ -104,8 +108,10 @@ int main() {
 	}
 	double T = norm_T / norm_start;
 	printf("Simulation ended successfully!\n");
+	printf("\nResults of the simulation:\n");
+	printf("\t T = %lf\n", T);
+	printf("=======================================================\n");
 
-	printf("\n***************************************************\n");
 
 	/* Print parameters */
 	FILE *f_par;
@@ -117,7 +123,7 @@ int main() {
 
 /*======================= FUNCTIONS ========================*/
 complex double f0(double x, double k) {
-	double sigma = 50.0 / k;
+	double sigma = 70.0 / k;
 	double x0 = L / 2.0 - 4.0 * sigma;
 	assert(x0 > 0.0);
 	return exp(-(x - x0) * (x - x0) / pow(sigma, 2)) * cexp(I * k * (x - x0));
