@@ -9,3 +9,12 @@ add_custom_target(run-bound-numerov-periodic
     DEPENDS bound-numerov-periodic
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/periodic.py
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+add_custom_target(plot-bound-numerov-periodic
+    COMMAND python periodic.py
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)

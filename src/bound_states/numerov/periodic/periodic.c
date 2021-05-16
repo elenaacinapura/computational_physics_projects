@@ -21,6 +21,14 @@ double F(double x, void *param);
 
 /*================= MAIN ================*/
 int main() {
+	/*================= WELCOME ================*/
+	printf("=============================================\n");
+	printf("BOUND STATES OF A PERIODIC POTENTIAL USING NUMEROV\n");
+	printf("=============================================\n");
+	printf("Parameters:\n");
+	printf("\tL = %.1lf\n\tN = %d\n\txi = hbar^2 / (m L^2 V0) = %.1lf\n", L, N, xi);
+	printf("Calculating...\n\n");
+
 	double dx = L / (N - 1);
 	double alfa = 2.0 / xi;
 	Params p;
@@ -33,10 +41,10 @@ int main() {
 
 	double K_start = -M_PI;
 	double K_end = M_PI;
-	double dK = 0.1;
+	double dK = 0.5;
 
-	double dE = 0.0005;
-	double E_start = dE;
+	double dE = 0.001;
+	double E_start = 0.0;
 
 	FILE *file;
 	file = fopen("periodic.csv", "w");
@@ -46,11 +54,11 @@ int main() {
 	double K = K_start;
 	while (K <= K_end) {
 		fprint_double(file, K);
-
+		printf("K = %lf\n", K);
 		/* Cycle on E */
 		int cnt_bound = 0;
 		double E = E_start;
-		while (cnt_bound < 2) {
+		while (cnt_bound <= 2) {
 			p.E = E;
 
 			/* Initialize x and phis */
@@ -72,22 +80,27 @@ int main() {
 
 			double Delta = cabs((cexp(I * K * L) * psi[1] + psi[N - 2] - psi[N - 1] * (2.0 + dx * dx * F(x[N - 1], &p))) / dx);
 
-            printf("K = %lf\tcnt = %d\tDelta = %lf\n", K, cnt_bound ,Delta);
+			// if (fabs(K) < 0.36 && E <= 0.001) {
+			// 	printf("K = %lf\tcnt = %d\tE = %lf\tDelta = %lf\n", K, cnt_bound, E, Delta);
+			// }
 
-			if (fabs(Delta) < 1e-2) {
+			if (fabs(Delta) < 1e-3) {
 				cnt_bound++;
-				if (cnt_bound < 2) {
+				if (cnt_bound <= 2) {
 					fprint_double(file, E);
 				} else {
-                    fprint_double_newline(file, E);
-                }
+					fprint_double_newline(file, E);
+				}
+				E += 1.0;
+				continue;
 			}
-
 			E += dE;
 		}
 		K += dK;
 	}
-    fclose(file);
+	fclose(file);
+	printf("Calculations ended successfully!\n");
+	printf("=============================================\n");
 }
 
 /*================= FUNCTIONS ================*/
