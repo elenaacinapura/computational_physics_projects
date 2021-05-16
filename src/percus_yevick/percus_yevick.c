@@ -57,7 +57,7 @@ int main() {
 	double c[N];
 	double F[N];
 
-	double rho_start = 0.1;
+	double rho_start = 0.05;
 	double d_rho = 0.005;
 
 	double norm;
@@ -65,9 +65,10 @@ int main() {
 	
 	init(r, h, c);
 	double rho = rho_start;
-	while (rho < rho_target) {
+	while (rho <= rho_target) {
 		do {
 			double c_t[N], h_t[N], c_new[N], h_new[N]; /* transforms and new vectors */
+			/*========= Convolution =========*/
 			vec_copy(N, c, c_t);
 			vec_copy(N, h, h_t);
 
@@ -81,6 +82,8 @@ int main() {
 
 			fft_radial_inverse(F, N, R);
 
+			
+			/*========= Update h and c =========*/
 			for (int i = 0; i < N; i++) {
 				c_new[i] = (F[i] + 1.0) * h0(r[i]);
 				h_new[i] = c_new[i] + F[i];
