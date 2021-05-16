@@ -6,7 +6,13 @@
 #include <print_routines.h>
 #include <stdio.h>
 
-#include "util.h"
+/*================ STRUCTURES ================*/
+typedef struct Params_periodic {
+    double a, E;
+} Params_periodic;
+
+/*================ FUNCTION HEADERS ================*/
+double V_periodic (double x, void *param);
 
 int main() {
 	/* Environment variables */
@@ -20,6 +26,16 @@ int main() {
 
 	Params_periodic p;
 	p.a = a;
+
+	/*=================== WELCOME =================*/
+	printf("===============================================================\n");
+	printf("BOUND STATES WITH DIAGONALIZATION OF PERIODIC POTENTIAL\n");
+	printf("===============================================================\n");
+	printf("Parameters:\n");
+	printf("\tN = %d\n", N);
+	printf("\tR = %.1lf\n", R);
+	printf("\txi = %.1lf\n", xi);
+	printf("Starting calculating...\n\n");
 
 	/* Matrix */
 	complex double H[N][N];
@@ -61,4 +77,13 @@ int main() {
 		K += dK;
 	}
     fclose (f);
+}
+
+/*================ FUNCTIONS ================*/
+double V_periodic (double x, void *param) {
+	if (x < 0.3) {
+		return -1.0;
+	}
+	return 0.0;
+
 }
