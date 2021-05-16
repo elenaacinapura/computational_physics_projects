@@ -8,11 +8,11 @@
 
 /*================ STRUCTURES ================*/
 typedef struct Params_periodic {
-    double a, E;
+	double a, E;
 } Params_periodic;
 
 /*================ FUNCTION HEADERS ================*/
-double V_periodic (double x, void *param);
+double V_periodic(double x, void *param);
 
 int main() {
 	/* Environment variables */
@@ -29,7 +29,7 @@ int main() {
 
 	/*=================== WELCOME =================*/
 	printf("===============================================================\n");
-	printf("BOUND STATES WITH DIAGONALIZATION OF PERIODIC POTENTIAL\n");
+	printf("BOUND STATES OF PERIODIC POTENTIAL WITH DIAGONALIZATION\n");
 	printf("===============================================================\n");
 	printf("Parameters:\n");
 	printf("\tN = %d\n", N);
@@ -51,11 +51,12 @@ int main() {
 			}
 		}
 	}
-    double res_eigval[N];
-    complex double res_eigvec[N][N];
+	double res_eigval[N];
+	complex double res_eigvec[N][N];
 
 	FILE *f;
 	f = fopen("periodic.csv", "w");
+	fprintf(f, "K\tE0\tE1\tE2\n");
 
 	double K = -M_PI;
 	double dK = 0.1;
@@ -65,25 +66,24 @@ int main() {
 		H[0][N - 1] = -xi / (2.0 * dx * dx) * cexp(-I * K);
 		H[N - 1][0] = -xi / (2.0 * dx * dx) * cexp(I * K);
 
-
 		diagonalize_herm(N, (_Complex double *)H, (_Complex double *)res_eigvec, res_eigval);
 
 		fprint_double(f, K);
-		for (int i = 0; i < 3; i++) {
-			fprint_double(f, res_eigval[i]);
-		}
-		fprintf(f, "\n");
+		fprint_double(f, res_eigval[0]);
+		fprint_double(f, res_eigval[1]);
+		fprint_double_newline(f, res_eigval[2]);
 
 		K += dK;
 	}
-    fclose (f);
+	fclose(f);
+	printf("Calculations ended successfully!\n");
+	printf("===============================================================\n");
 }
 
 /*================ FUNCTIONS ================*/
-double V_periodic (double x, void *param) {
+double V_periodic(double x, void *param) {
 	if (x < 0.3) {
 		return -1.0;
 	}
 	return 0.0;
-
 }
