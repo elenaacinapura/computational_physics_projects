@@ -22,15 +22,16 @@ double F(double x, void *param);
 /*================= MAIN ================*/
 int main() {
 	/*================= WELCOME ================*/
-	printf("=============================================\n");
+	printf("======================================================\n");
 	printf("BOUND STATES OF A PERIODIC POTENTIAL USING NUMEROV\n");
-	printf("=============================================\n");
+	printf("======================================================\n");
 	printf("Parameters:\n");
-	printf("\tL = %.1lf\n\tN = %d\n\txi = hbar^2 / (m L^2 V0) = %.1lf\n", L, N, xi);
-	printf("Calculating...\n\n");
+	printf("\tL = %.1lf\n\tN = %d\n\txi = hbar^2 / (2 m L^2 V0) = %.1lf\n", L, N, xi);
+	printf("Calculating...\nStatus:\t%.0lf%%", 0.0);
+	
 
 	double dx = L / (N - 1);
-	double alfa = 2.0 / xi;
+	double alfa = 1.5;
 	Params p;
 	p.alfa = alfa;
 
@@ -42,9 +43,11 @@ int main() {
 	double K_start = -M_PI;
 	double K_end = M_PI;
 	double dK = 0.5;
+	int num_K = ceil(2.0*K_end/dK);
+	double percentage_step = 100.0/num_K;
 
 	double dE = 0.001;
-	double E_start = 0.0;
+	double E_start = -1.0;
 
 	FILE *file;
 	file = fopen("periodic.csv", "w");
@@ -52,9 +55,10 @@ int main() {
 
 	/* Cycle on K */
 	double K = K_start;
+	int cnt_K = 0;
 	while (K <= K_end) {
 		fprint_double(file, K);
-		printf("K = %lf\n", K);
+
 		/* Cycle on E */
 		int cnt_bound = 0;
 		double E = E_start;
@@ -80,9 +84,6 @@ int main() {
 
 			double Delta = cabs((cexp(I * K * L) * psi[1] + psi[N - 2] - psi[N - 1] * (2.0 + dx * dx * F(x[N - 1], &p))) / dx);
 
-			// if (fabs(K) < 0.36 && E <= 0.001) {
-			// 	printf("K = %lf\tcnt = %d\tE = %lf\tDelta = %lf\n", K, cnt_bound, E, Delta);
-			// }
 
 			if (fabs(Delta) < 1e-3) {
 				cnt_bound++;
@@ -97,10 +98,14 @@ int main() {
 			E += dE;
 		}
 		K += dK;
+		
+		cnt_K++;
+		fflush(stdout);
+		printf("\rStatus:\t%.0lf%%", percentage_step*cnt_K);
 	}
 	fclose(file);
-	printf("Calculations ended successfully!\n");
-	printf("=============================================\n");
+	printf("\nCalculations ended successfully!\n");
+	printf("======================================================\n");
 }
 
 /*================= FUNCTIONS ================*/
@@ -109,7 +114,7 @@ double F(double x, void *param) {
 	double alfa = p->alfa;
 	double E = p->E;
 	if (x < 0.3) {
-		return -alfa * (1.0 + E);
+		return alfa * (1.0 - E);
 	}
 	return -alfa * E;
 }
