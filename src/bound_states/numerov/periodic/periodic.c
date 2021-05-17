@@ -27,7 +27,9 @@ int main() {
 	printf("======================================================\n");
 	printf("Parameters:\n");
 	printf("\tL = %.1lf\n\tN = %d\n\txi = hbar^2 / (2 m L^2 V0) = %.1lf\n", L, N, xi);
-	printf("Calculating...\nStatus:\t%.0lf%%", 0.0);
+	printf("Calculating...\n");
+	printf("Status:\t%.0lf%%", 0.0);
+	fflush(stdout);
 	
 
 	double dx = L / (N - 1);
@@ -100,8 +102,8 @@ int main() {
 		K += dK;
 		
 		cnt_K++;
-		fflush(stdout);
 		printf("\rStatus:\t%.0lf%%", percentage_step*cnt_K);
+		fflush(stdout);
 	}
 	fclose(file);
 	printf("\nCalculations ended successfully!\n");
