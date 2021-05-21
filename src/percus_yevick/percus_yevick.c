@@ -9,33 +9,27 @@
 #include <stdlib.h>
 
 /*======================= CONSTANTS ========================*/
-const int N = 2048;
+const int N = 4096;
 const double R = 10.0;
 const double rho_target = 0.5;
-const double T = 0.5;
+const double T = 0.8;
 const double alpha = 0.01;
 
 /*======================= FUNCTION HEADERS ========================*/
-/**
- * Repulsive part of Lennard-Jones interaction
- */
-double h0(double r);
 
+double h0(double r);
 /**
  * Initialize the vectors.
  */
 double init(double r[], double h[], double c[]);
-
 /**
  * Calculate the distance between two functions.
  */
 double Dist(double h_new[], double h_old[]);
-
 /**
  * Calculate the pressure of the fluid.
  */
 double pressure(double r[], double g[]);
-
 /**
  * Calculate the average internal energy per particle of the fluid.
  */
@@ -48,7 +42,7 @@ int main() {
 	printf("PERCUS-YEVICK SIMULATION\n");
 	printf("============================================================\n");
 	printf("Parameters of the simulation:\n");
-	printf("\tN = %d\n\tR = %.1lf\n\tT = %.1lf\n\trho = %.1lf\n\talpha = %.2lf\n", N, R, T, rho_target, alpha);
+	printf("\tN = %d\n\tR = %.1lf\n\tT = %.1lf\n\trho target = %.1lf\n\talpha = %.2lf\n", N, R, T, rho_target, alpha);
 	printf("\nCalculating...\n\n");
 	/*======================= PERCUS-YEVICK METHOD ========================*/
 	/* My vectors */
@@ -65,7 +59,10 @@ int main() {
 	
 	init(r, h, c);
 	double rho = rho_start;
-	while (rho <= rho_target) {
+	printf("rho = %.3lf", rho);
+	while (rho <= rho_target + d_rho) {
+		printf("\rrho = %.3lf", rho);
+		fflush(stdout);
 		do {
 			double c_t[N], h_t[N], c_new[N], h_new[N]; /* transforms and new vectors */
 			/*========= Convolution =========*/
@@ -82,10 +79,9 @@ int main() {
 
 			fft_radial_inverse(F, N, R);
 
-			
 			/*========= Update h and c =========*/
 			for (int i = 0; i < N; i++) {
-				c_new[i] = (F[i] + 1.0) * h0(r[i]);
+				c_new[i] = h0(r[i]) * exp(F[i]) + exp(F[i]) - 1.0 - F[i];
 				h_new[i] = c_new[i] + F[i];
 
 				c_new[i] = alpha * c_new[i] + (1.0 - alpha) * c[i];
@@ -106,7 +102,7 @@ int main() {
 		} while (norm > 1e-6);
 		rho += d_rho;
 	}
-	printf("Calculations ended successfully!\n\n");
+	printf("\nCalculations ended successfully!\n\n");
 	/*======================= PRESSURE AND INTERNAL ENERGY ========================*/
 	double g[N];
 	double P, U;
@@ -116,7 +112,7 @@ int main() {
 	P = pressure(r, g);
 	U = int_energy(r, g);
 	printf("Results of the calculations:\n");
-	printf("\tP = %lf\n\tU per particle = %lf\n", P, U);
+	printf("\tP = %lf\n\tU per 108 particles = %lf\n", P, U*108.0);
 	printf("============================================================\n");
 
 	/*======================= PRINT ========================*/
@@ -139,6 +135,10 @@ int main() {
 }
 
 /*============== FUNCTIONS ==============*/
+
+/**
+ * Initial value for h
+ */
 double h0(double r) {
 	if (r < 1e-5) {
 		return -1.0;
@@ -153,6 +153,7 @@ double init(double r[], double h[], double c[]) {
 		c[n] = h[n];
 	}
 }
+
 double Dist(double h_new[], double h_old[]) {
 	double res = 0.0;
 	double dr = R / N;
