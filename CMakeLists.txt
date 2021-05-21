@@ -5,13 +5,17 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_subdirectory(extern/computational_physics_lib)
+
 # List here the directories in src
-add_subdirectory(src/lennard_jones_fluid)
-add_subdirectory(src/tunneling)
-add_subdirectory(src/sommerfeld)
-add_subdirectory(src/variational_method)
-add_subdirectory(src/dipolar_field)
-add_subdirectory(src/quantum_scattering)
-add_subdirectory(src/bound_states)
-add_subdirectory(src/ode)
-add_subdirectory(src/sun)
+
+add_subdirectory(src/Scattering)
+
+#add_subdirectory(src/lennard_jones_fluid)
+#add_subdirectory(src/tunneling)
+#add_subdirectory(src/sommerfeld)
+#add_subdirectory(src/variational_method)
+#add_subdirectory(src/dipolar_field)
+#add_subdirectory(src/quantum_scattering)
+#add_subdirectory(src/bound_states)
+#add_subdirectory(src/ode)
+#add_subdirectory(src/sun)
