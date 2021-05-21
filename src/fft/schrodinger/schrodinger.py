@@ -6,16 +6,16 @@ import matplotlib.animation as animation
 # plt.rc('text', usetex=True)
 # plt.rc('font', family='serif', size=12)
 
-ANIMATION = 0
-START_END = 1
-T_PLOT = 1
+ANIMATION = 1
+START_END = 0
+T_PLOT = 0
 EVOLUTION = 1
 
 data = pd.read_csv('parameters.csv', delimiter='\t')
 N = data['N'][0]
 T = data['T'][0]
-dt = data['dt'][0]
 L = data['L'][0]
+skip = int(10)
 
 #========================== EVOLUTION ==========================
 if (EVOLUTION):
@@ -29,8 +29,8 @@ if (EVOLUTION):
     V = [0 if abs(x[i] - L/2) > 1.0 else 1.0 for i in range(N)]
 
     def animate (i):
-        xframe = x[i*N: (i+1)*N]
-        fframe = f[i*N: (i+1)*N]
+        xframe = x[i*skip*N: (i*skip+1)*N]
+        fframe = f[i*skip*N: (i*skip+1)*N]
         ax1.clear()
         ax1.set_title('Quantum wave packet with E = {}'.format(E))
         ax1.set_xlim(0, L)
@@ -45,7 +45,7 @@ if (EVOLUTION):
     if (ANIMATION):
         fig = plt.figure('Quantum particle')
         ax1 = fig.add_subplot(1,1,1)    
-        a = animation.FuncAnimation(fig, animate, frames=np.arange(T), interval=0.01)
+        a = animation.FuncAnimation(fig, animate, frames=np.arange(int(T/skip)), interval=0.001)
 
 
     l = len(x)

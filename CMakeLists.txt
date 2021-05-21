@@ -3,6 +3,8 @@ project(ComputationalPhysicsProject)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set (CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 add_subdirectory(extern/computational_physics_lib)
 # List here the directories in src
@@ -13,9 +15,7 @@ add_subdirectory(src/variational_method)
 add_subdirectory(src/dipolar_field)
 add_subdirectory(src/quantum_scattering)
 add_subdirectory(src/bound_states)
+add_subdirectory(src/percus_yevick)
 add_subdirectory(src/ode)
-<<<<<<< HEAD
 add_subdirectory(src/sun)
-=======
 add_subdirectory(src/fft)
->>>>>>> 81f4b0f82cb5ff912d93e2491f939f0ea6336044
