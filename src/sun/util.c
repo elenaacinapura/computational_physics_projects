@@ -7,14 +7,15 @@
 #include "util.h"
 
 double F_theta(double useless, double xi, void *p){
-    assert(xi > 0.0);
+    if (xi < EPS) {
+        return 0.0;
+    }
     Param *par = (Param *)p;
     double eta = par->eta;
     return -eta/(xi*xi);
 }
 
 double F_eta(double useless, double xi, void *p){
-    assert(xi > 0.0);
     Param *par = (Param *)p;
     double n = par->n;
     double theta = par->theta;
@@ -36,15 +37,14 @@ void increment_dimension(Vec *xi, Vec *theta, Vec *eta){
     (eta->dim)++;
 }
 
-double integral(double xi_0, double dxi, Vec *theta, Param *p){
+double integral(double xi_0, double dxi, Vec *xi, Vec *theta, Param *p){
     int dim = theta->dim;
     dim -= 1;
     double n = p->n;
     
     double res = 0.0;
     for(int i=0;i<dim;i++){
-        double xi = dxi*i;
-        res += xi * xi * pow(theta->v[i],n) * dxi; 
+        res += pow(xi->v[i], 2) * pow(theta->v[i],n) * dxi; 
     }
     return res;
 }
