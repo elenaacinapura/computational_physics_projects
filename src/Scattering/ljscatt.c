@@ -11,7 +11,7 @@ int main(){
     /* system parameters */
     double m_D = 2.014; // uma
     double m_Ar = 39.948; // uma
-    double s = 3.075; // armstrong
+    double s = 3.075; // angstrom
     double eps = 54.4; // kelvin
 
     /* conversion, do not edit */
