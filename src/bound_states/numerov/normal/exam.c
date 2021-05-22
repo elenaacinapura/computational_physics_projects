@@ -9,7 +9,7 @@
 
 /*================ PARAMETERS ===============*/
 const double xi = 0.015;
-const double LEFT_LIM = -3.0;
+const double LEFT_LIM = -4.1;
 const double RIGHT_LIM = 0.0;
 const double dx = 0.001;
 const double x0 = -0.6; /* meeting point */
@@ -26,6 +26,9 @@ double Delta_E(double E, void *param);
 void print_eigenfunction(double E, void *param);
 /*================ MAIN ===============*/
 int main() {
+    int dimF = (int)ceil((x0 - LEFT_LIM) / dx) + 1;
+	int dimB = (int)ceil((RIGHT_LIM - x0) / dx) + 1;
+    int N = dimF + dimB -1;
 	/*============ Welcome ============*/
 	printf("=================================================\n");
 	printf("FIND THE GROUND STATE WITH NUMEROV ALGORITHM\n");
@@ -35,6 +38,7 @@ int main() {
 	printf("\tInterval: [%.1lf, %.1lf]\n", LEFT_LIM, RIGHT_LIM);
 	printf("\tdx = %.4lf\n", dx);
 	printf("\tMeeting point x0 = %.1lf\n", x0);
+    printf("\tNumber of points N = %d\n", N);
 	printf("\nStarting calculating...\n\n");
 
 	double a = 1.0 / xi;
