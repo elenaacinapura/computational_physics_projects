@@ -34,7 +34,7 @@ int main(){
     
     /* other parameters */
     int l_max = 25;
-    double L = 20.0;
+    double L = 10.0;
     double dr = 0.001;
 
     int dim = (int)(L / dr);
