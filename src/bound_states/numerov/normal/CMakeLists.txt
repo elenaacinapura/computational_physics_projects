@@ -36,3 +36,12 @@ add_custom_target(run-bound-numerov-exam
     DEPENDS bound-numerov-exam
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/exam.py
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_target(plot-bound-numerov-exam
+    COMMAND python exam.py 2>&1 | grep -v 'libGL'
+    DEPENDS exam.py
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)

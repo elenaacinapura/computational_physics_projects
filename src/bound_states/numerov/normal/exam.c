@@ -134,8 +134,8 @@ void print_eigenfunction(double E, void *param) {
 	p->E = E;
 
 	/* Create arrays: forward and backward*/
-	int dimF = (int)ceil((RIGHT_LIM - LEFT_LIM + x0) / dx) + 1;
-	int dimB = (int)ceil((RIGHT_LIM - LEFT_LIM - x0) / dx) + 1;
+	int dimF = (int)ceil((x0 - LEFT_LIM) / dx) + 1;
+	int dimB = (int)ceil((RIGHT_LIM - x0) / dx) + 1;
 	double xF[dimF], xB[dimB];
 	double phiF[dimF], phiB[dimB];
 
