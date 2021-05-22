@@ -9,21 +9,23 @@
 int main(){
 
     /* system parameters */
-    double m_D = 1.00784; //2.014; // uma
-    double m_Ar = 83.798; //39.948; // uma
-    double s = 3.18; //3.075; // armstrong
-    double eps = 68.5; //54.4; // kelvin
+    double m_D = 2.014; // uma
+    double m_Ar = 39.948; // uma
+    double s = 3.075; // armstrong
+    double eps = 54.4; // kelvin
 
     /* conversion, do not edit */
     double kb = 8.617333262e-2; // meV/K    
-    double mu = m_D*m_Ar/(m_D+m_Ar); // uma
+    double mu = m_D * m_Ar / (m_D + m_Ar); // uma
     double uma = 931.49410242e9; // meV/c^2
     double s_ev = (s / 1.97327)*1e-6; // ħ*c/meV
-    eps = 68.5 * kb; // meV 
+    eps *= kb; // meV 
 
     /* numerical parameter xi */
     double xi = 1/(2*mu*uma*s_ev*s_ev*eps);
-    printf("xi = %lf\n",xi);
+    printf("---------------------------------");
+    printf("\n\n Value of the adimensional parameter xi = %lf\n\n",xi);
+    printf("---------------------------------\n");
 
     /* energy in [E_start,E_end] meV */
     double E_start = 0.5 / eps;
