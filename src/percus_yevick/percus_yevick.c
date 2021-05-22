@@ -10,40 +10,30 @@
 
 /*======================= CONSTANTS ========================*/
 const int N = 4096;
-const double R = 10.0;
-const double rho_target = 0.5;
-const double T = 0.8;
-const double alpha = 0.01;
+const double R = 8.0;
+const double rho_target = 0.7;
+const double T = 1.35;
+const double alpha = 0.01;			 /* adjusting parameter */
+const double alpha_potential = 20.0; /* parameter in the potential */
 
 /*======================= FUNCTION HEADERS ========================*/
-
+double potential(double r);
+double deriv_potential (double r);
 double h0(double r);
-/**
- * Initialize the vectors.
- */
 double init(double r[], double h[], double c[]);
-/**
- * Calculate the distance between two functions.
- */
 double Dist(double h_new[], double h_old[]);
-/**
- * Calculate the pressure of the fluid.
- */
 double pressure(double r[], double g[]);
-/**
- * Calculate the average internal energy per particle of the fluid.
- */
-double int_energy (double r[], double g[]);
+double int_energy(double r[], double g[]);
 
 /*======================= MAIN ========================*/
 int main() {
 	/*======================= WELCOME ========================*/
 	printf("============================================================\n");
-	printf("PERCUS-YEVICK SIMULATION\n");
+	printf("THE HYPERNETTED CHAIN APPROXIMATION\n");
 	printf("============================================================\n");
 	printf("Parameters of the simulation:\n");
-	printf("\tN = %d\n\tR = %.1lf\n\tT = %.1lf\n\trho target = %.1lf\n\talpha = %.2lf\n", N, R, T, rho_target, alpha);
-	printf("\nCalculating...\n\n");
+	printf("\tN = %d\n\tR = %.1lf\n\tT = %.2lf\n\tRho target = %.1lf\n\tAlpha = %.2lf (aka \"gentleness\")\n", N, R, T, rho_target, alpha);
+	printf("\nCalculating...\n");
 	/*======================= PERCUS-YEVICK METHOD ========================*/
 	/* My vectors */
 	double r[N];
@@ -56,12 +46,12 @@ int main() {
 
 	double norm;
 	int stuck_in_loop = 0;
-	
+
 	init(r, h, c);
 	double rho = rho_start;
-	printf("rho = %.3lf", rho);
-	while (rho <= rho_target + d_rho) {
-		printf("\rrho = %.3lf", rho);
+	printf("Current value of rho = %.3lf", rho);
+	while (rho <= rho_target + 0.1*d_rho) { 	/* some times rho=rho_target fails just for binary representation*/
+		printf("\rCurrent value of rho = %.3lf", rho);
 		fflush(stdout);
 		do {
 			double c_t[N], h_t[N], c_new[N], h_new[N]; /* transforms and new vectors */
@@ -87,6 +77,7 @@ int main() {
 				c_new[i] = alpha * c_new[i] + (1.0 - alpha) * c[i];
 				h_new[i] = alpha * h_new[i] + (1.0 - alpha) * h[i];
 			}
+			/*========= Calculate norm =========*/
 			double norm_old = norm;
 			norm = Dist(h_new, h);
 			if (norm_old == norm) {
@@ -112,7 +103,7 @@ int main() {
 	P = pressure(r, g);
 	U = int_energy(r, g);
 	printf("Results of the calculations:\n");
-	printf("\tP = %lf\n\tU per 108 particles = %lf\n", P, U*108.0);
+	printf("\tP = %.3lf\n\tU per particles = %.3lf\n", P, U);
 	printf("============================================================\n");
 
 	/*======================= PRINT ========================*/
@@ -126,7 +117,7 @@ int main() {
 	}
 	fclose(file);
 
-	FILE *f_par;
+	FILE* f_par;
 	f_par = fopen("parameters.csv", "w");
 	fprintf(f_par, "rho\tT\n");
 	fprint_double(f_par, rho_target);
@@ -135,17 +126,34 @@ int main() {
 }
 
 /*============== FUNCTIONS ==============*/
-
 /**
- * Initial value for h
+ * Potential.
+ */
+double potential(double r) {
+	if (r <= 0.5) {
+		r = 0.5;
+	}
+	return 1.0 / (1.0 - 6.0 / alpha_potential) * (6.0 / alpha_potential * exp(alpha_potential - alpha_potential * r) - pow(r, -6));
+}
+/**
+ * Potential.
+ */
+double deriv_potential(double r) {
+	if (r <= 0.5) {
+		return 0;
+	}
+	return 1.0 / (1.0 - 6.0 / alpha_potential) * (-6.0 * exp(alpha_potential - alpha_potential * r) + 6.0 * pow(r, -7));
+}
+/**
+ * Initial value for h at low densities
  */
 double h0(double r) {
-	if (r < 1e-5) {
-		return -1.0;
-	}
-	double V = 4.0 * pow(r, -12);
+	double V = potential(r);
 	return exp(-V / T) - 1.0;
 }
+/**
+ * Initialize the vectors.
+ */
 double init(double r[], double h[], double c[]) {
 	for (int n = 0; n < N; n++) {
 		r[n] = n * R / N;
@@ -153,7 +161,9 @@ double init(double r[], double h[], double c[]) {
 		c[n] = h[n];
 	}
 }
-
+/**
+ * Calculate the distance between two functions (L^2)
+ */
 double Dist(double h_new[], double h_old[]) {
 	double res = 0.0;
 	double dr = R / N;
@@ -162,20 +172,26 @@ double Dist(double h_new[], double h_old[]) {
 	}
 	return res;
 }
+/**
+ * Calculate the pressure of the fluid.
+ */
 double pressure(double r[], double g[]) {
 	double res = 0.0;
-	double dr = R/N;
+	double dr = R / N;
 	for (int n = 1; n < N; n++) {
-		res += -48.0 * pow(r[n], -13) * pow(r[n], 3) * g[n] * dr;
+		res += pow(r[n], 3) * g[n] * deriv_potential(r[n]) * dr;
 	}
-	res *= - 2.0* M_PI * pow(rho_target, 2)/ 3.0;
+	res *= -2.0 * M_PI * pow(rho_target, 2) / 3.0;
 	return res;
 }
-double int_energy (double r[], double g[]) {
+/**
+ * Calculate the average internal energy per particle of the fluid.
+ */
+double int_energy(double r[], double g[]) {
 	double res = 0.0;
-	double dr = R/N;
+	double dr = R / N;
 	for (int i = 1; i < N; i++) {
-		res += 4.0 * pow(r[i], -12) * g[i] * pow(r[i], 2) * dr;
+		res += potential(r[i]) * g[i] * pow(r[i], 2) * dr;
 	}
 	res *= rho_target * 2.0 * M_PI;
 	return res;
