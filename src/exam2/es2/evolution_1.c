@@ -8,11 +8,15 @@
 
 /* --------------------------- */
 #define EPS 1e-6
+#define TYPE 0 // 1 for animation
 
 /* --------------------------- */
 void read_ground(double x[], double psi[], int N);
 double potential(double x);
 void evolution_step(complex double psi[], complex double rho[], complex double eta[], int N);
+void run_for_animation(double T, double dt, double x[], double V[], complex double Psi[], 
+                complex double rho[], complex double eta[], int N);
+
 // void calculate_norms(double x[], complex double psi[], double *n1, double *n2);
 
 /************************** MAIN *********************************/
@@ -23,17 +27,15 @@ int main(){
     double L = 2.0 * 4.096;
 
     /* ground state energy */
-    double E_0 = -0.018028;
+    //double E_0 = -0.018028;
     int N = 2 * 4096;
-    double dx, x[N], psi0[N], psi[N], V[N];
+    double x[N], psi[N], V[N];
     read_ground(x,psi,N);
-    vec_copy(N,psi,psi0);
-    dx = x[1] - x[0];
-
+    //double dx = x[1] - x[0];
 
     /* split operator method */
     double T = 1000.0;
-    double dt = 0.001;
+    double dt = 0.01;
     complex double K, rho[N], eta[N];
     
     for(int i=0;i<N;i++){
@@ -60,13 +62,19 @@ int main(){
 
     }while(t < T);
 
+    if(TYPE){
+        /* test animation */
+        run_for_animation(T,dt,x,V,Psi,rho,eta,N);
+    }
+
     
     /* test */
     FILE *fp;
-    fp = fopen("ground.csv","w");
+    fp = fopen("test.csv","w");
     for(int i=0;i<N;i++){
         fprint_double(fp,x[i]);
         fprint_double(fp,V[i]);
+        fprint_double(fp,psi[i]);
         fprint_double(fp,creal(Psi[i]));
         fprint_double_newline(fp,cimag(Psi[i]));
     }
@@ -78,7 +86,7 @@ int main(){
 void read_ground(double x[], double psi[], int N){
     
     /* read from file the ground state wave function */
-    assert(N = 2 * 4096);
+    assert(N == 2 * 4096);
     int N_prov = N / 2;
     double x_prov[N_prov], psi_prov[N_prov];
     FILE *f_psi;
@@ -133,6 +141,49 @@ void evolution_step(complex double psi[], complex double rho[], complex double e
 
     gsl_fft_complex_radix2_inverse((double *)psi,1,N);
 }
+
+void run_for_animation(double T, double dt, double x[], double V[], complex double Psi[], 
+                complex double rho[], complex double eta[], int N){
+
+    /* evolution, for the plot */
+    const int stp = (int)ceil(T/dt);
+
+    int density = (int)stp / 100;
+
+    double data[N][stp/density+2];
+    for(int n=0;n<N;n++){
+        data[n][0] = x[n];
+        data[n][1] = V[n];
+    }
+
+    int cnt = 0, col = 0;
+    do{
+        if(cnt % density == 0){
+            for(int n=0;n<N;n++){
+                data[n][col+2] = pow(cabs(Psi[n]),2);
+            }
+            col++;
+        }
+        evolution_step(Psi,rho,eta,N);
+        cnt++;
+    }while(cnt<stp);
+    assert(cnt == stp);
+    assert(col == stp/density);
+
+    /* print */
+    FILE *file;
+    file = fopen("animation.csv","w");
+
+    for(int i=0;i<N;i++){
+        for(int j=0;j<stp/density+2;j++){
+            fprint_double(file,data[i][j]);
+        }
+        fprintf(file,"\n");
+    }
+    fclose(file);
+
+}
+
 
 // void calculate_norms(double x[], complex double psi[], double *n1, double *n2){
 //     int cnt = 0;
