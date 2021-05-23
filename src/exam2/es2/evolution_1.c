@@ -8,7 +8,14 @@
 
 /* --------------------------- */
 #define EPS 1e-6
+#define DIM_MAX (int)1e6
 #define TYPE 0 // 1 for animation
+
+/* --------------------------- */
+typedef struct VecZ{
+    complex double v[DIM_MAX];
+    int dim;
+}VecZ;
 
 /* --------------------------- */
 void read_ground(double x[], double psi[], int N);
@@ -16,8 +23,9 @@ double potential(double x);
 void evolution_step(complex double psi[], complex double rho[], complex double eta[], int N);
 void run_for_animation(double T, double dt, double x[], double V[], complex double Psi[], 
                 complex double rho[], complex double eta[], int N);
-
-// void calculate_norms(double x[], complex double psi[], double *n1, double *n2);
+double integrate_for_p(complex double Psi[], double x[], int N);
+void save_transform_abs(FILE *file, complex double f[], double L, int N);
+double calculate_norm(double x[], complex double Psi[], int N);
 
 /************************** MAIN *********************************/
 int main(){
@@ -31,11 +39,10 @@ int main(){
     int N = 2 * 4096;
     double x[N], psi[N], V[N];
     read_ground(x,psi,N);
-    //double dx = x[1] - x[0];
 
     /* split operator method */
-    double T = 1000.0;
-    double dt = 0.01;
+    double T = pow(2.0,5.0);
+    double dt = 1.0;
     complex double K, rho[N], eta[N];
     
     for(int i=0;i<N;i++){
@@ -54,31 +61,66 @@ int main(){
     }
 
     /* evolution */
-    double t = 0.0;
-    do{
+    if(!TYPE){
+        
+        VecZ p_time;
+        double prob;
+        p_time.dim = 0;
 
-        evolution_step(Psi,rho,eta,N);
-        t += dt;
+        FILE *f_p;
+        f_p = fopen("probability.csv","w");
+        assert(f_p != NULL);
+        
+        double t = 0.0;
+        do{
 
-    }while(t < T);
+            prob = integrate_for_p(Psi,x,N);
+            p_time.v[p_time.dim] = prob;
 
+            fprint_double(f_p,t);
+            fprint_double_newline(f_p,prob);
+            
+            evolution_step(Psi,rho,eta,N);
+            t += dt;
+            p_time.dim++;
+
+        }while(t < T);
+        fclose(f_p);
+    
+        /* spectral analysis */ 
+        int dim = p_time.dim;
+        printf("dimesione = %d\n",dim);
+        complex double P_time[dim];
+        for(int i=0;i<dim;i++){
+            P_time[i] = p_time.v[i];
+        }
+
+        FILE *f_spectrum;
+        f_spectrum = fopen("spectrum.csv","w");
+        save_transform_abs(f_spectrum,P_time,T,dim);
+        fclose(f_spectrum);
+    
+    }
+    
+
+    /* animation */
     if(TYPE){
-        /* test animation */
         run_for_animation(T,dt,x,V,Psi,rho,eta,N);
     }
 
+
     
-    /* test */
-    FILE *fp;
-    fp = fopen("test.csv","w");
-    for(int i=0;i<N;i++){
-        fprint_double(fp,x[i]);
-        fprint_double(fp,V[i]);
-        fprint_double(fp,psi[i]);
-        fprint_double(fp,creal(Psi[i]));
-        fprint_double_newline(fp,cimag(Psi[i]));
-    }
-    fclose(fp);
+    // /* test */
+    // FILE *fp;
+    // fp = fopen("test.csv","w");
+    // for(int i=0;i<N;i++){
+    //     fprint_double(fp,x[i]);
+    //     fprint_double(fp,V[i]);
+    //     fprint_double(fp,psi[i]);
+    //     fprint_double(fp,creal(Psi[i]));
+    //     fprint_double_newline(fp,cimag(Psi[i]));
+    // }
+    // fclose(fp);
 
 
 }
@@ -184,16 +226,52 @@ void run_for_animation(double T, double dt, double x[], double V[], complex doub
 
 }
 
+double integrate_for_p(complex double Psi[], double x[], int N){
+    
+    int cnt = 0;
+    double dx = x[1] - x[0];
+    double res = 0.0;
+    while(x[cnt] < 0.0){
+        res += 0.0;
+        cnt++;
+    }
+    while(cnt < N){
+        res += pow(cabs(Psi[cnt]),2) * dx;
+        cnt++;
+    }
 
-// void calculate_norms(double x[], complex double psi[], double *n1, double *n2){
-//     int cnt = 0;
+    return res;
+}
 
-//     *n1 = 0.0;
-//     while(x[cnt] < 0.0){
-//         *n1 += pow(cabs(psi[cnt]),2);
-//         cnt++;
-//     }
-//     *n2 = 0.0;
-//     while(cnt < N){
-//         *n2 += pow(cabs(psi[cnt]),2);
-//}
+void save_transform_abs(FILE *file, complex double f[], double L, int N){
+
+    gsl_fft_complex_radix2_forward((double *)f,1,N);
+
+    double k_ord[N];
+    for(int n=0;n<N;n++){
+        k_ord[n] = 2 * M_PI / L * n - M_PI * N / L;
+    }
+
+    double f_abs_ord[N];
+    for(int n=0;n<=N/2-2;n++){
+        f_abs_ord[n] = cabs(f[N/2+1+n]);
+    }
+    for(int n=N/2-2+1;n<N;n++){
+        f_abs_ord[n] = cabs(f[n-N/2+1]);
+    }
+
+    for(int n=0;n<N;n++){
+        fprint_double(file,k_ord[n]);
+        fprint_double_newline(file,f_abs_ord[n]);
+    }
+
+}
+
+double calculate_norm(double x[], complex double Psi[], int N){
+    double dx = x[1] - x[0];
+    double norm = 0.0;
+    for(int i=0;i<N;i++){
+        norm += pow(cabs(Psi[i]),2) * dx;
+    }
+    return norm;
+}
