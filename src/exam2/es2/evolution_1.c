@@ -10,6 +10,7 @@
 #define EPS 1e-6
 #define DIM_MAX (int)1e6
 #define TYPE 0 // 1 for animation
+#define POTENTIALTYPE 0 // 0 for Tunneling(1) and 1 for Tunneling(2)
 
 /* --------------------------- */
 void read_ground(double x[], double psi[], int N);
@@ -20,7 +21,7 @@ void run_for_animation(double T, double dt, double x[], double V[], complex doub
 double integrate_for_p(complex double Psi[], double x[], int N);
 void fourier_analysis(FILE *file, complex double f[], double L, int N, double *m1, double *m2);
 double calculate_norm(double x[], complex double Psi[], int N);
-void two_points_of_maximum(double x[], double f[], int N, double *m1, double *m2);
+void points_of_maximum(double x[], double f[], int N, double *m1, double *m2);
 
 /************************** MAIN *********************************/
 int main(){
@@ -35,7 +36,7 @@ int main(){
     read_ground(x,psi,N);
 
     /* split operator method */
-    double T = pow(2,12);
+    double T = 500.0;
     double dt = 1.0;
     complex double K, rho[N], eta[N];
     
@@ -57,6 +58,9 @@ int main(){
     /******************** EVOLUTION *******************/
     if(!TYPE){
         
+        T = pow(2,12);
+        dt = 1.0;
+
         int tau = (int)(T/dt);
         assert(tau % 2 == 0);
         complex double p_time[tau];
@@ -89,7 +93,9 @@ int main(){
         f_spectrum = fopen("spectrum.csv","w");
         fourier_analysis(f_spectrum,p_time,T,tau,&m1,&m2);
         fclose(f_spectrum);
-        printf("max1 = %lf\t max2 = %lf\n",m1,m2);
+
+        /* print period */
+        printf("\nT = %lf\n",2*M_PI/m1);
     
     }
 
@@ -137,10 +143,17 @@ void read_ground(double x[], double psi[], int N){
 }
 
 double potential(double x){
-    if(x < 0){
-        return - x * x * (x + 1);
+    
+    if(x > 0 && !POTENTIALTYPE){
+       
+        return  x * x * (x - 1.0);
+    
+    }else if(x > 0 && POTENTIALTYPE){
+    
+        return  2.0 * x * x * (x - 1.0);
+    
     }
-    return x * x * (x - 1);
+    return -x * x * (x + 1.0);
 }
 
 void evolution_step(complex double psi[], complex double rho[], complex double eta[], int N){
@@ -241,7 +254,7 @@ void fourier_analysis(FILE *file, complex double f[], double L, int N, double *m
         fprint_double_newline(file,f_abs_ord[n]);
     }
 
-    two_points_of_maximum(k_ord,f_abs_ord,N,m1,m2);
+    points_of_maximum(k_ord,f_abs_ord,N,m1,m2);
 
 }
 
@@ -254,31 +267,27 @@ double calculate_norm(double x[], complex double Psi[], int N){
     return norm;
 }
 
-void two_points_of_maximum(double x[], double f[], int N, double *m1, double *m2){
+void points_of_maximum(double x[], double f[], int N, double *m1, double *m2){
 
     int cnt = 0;
     while(x[cnt] < EPS){
         cnt++;
     }
-    
-    double point;
 
+    /* first point of maximum */
+    double point;
+    int pos;
     double max1 = 0.0;
     for(int i=cnt;i<N;i++){
         if(f[i] >= max1){
             max1 = f[i];
             point = x[i];
+            pos = i;
         }
     }
     *m1 = point;
 
-    double max2 = 0.0;
-    for(int i=cnt;i<N;i++){
-        if( ( f[i] >= max2 ) && ( f[i] < max1 ) ){
-            max2 = f[i];
-            point = x[i];
-        }
-    }
-    *m2 = point;
+    /* second point of maximum */
+    *m2 = 0.0;
 
 }
