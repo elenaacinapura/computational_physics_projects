@@ -149,9 +149,23 @@ void print_eigenfunction(double E, void *param) {
 	for (int i = 0; i < N_POINTS; i++) {
 		N += psi[i]*psi[i]*dx;
 	}
+	fprint_double_newline(stdout, N);
 	for (int i = 0; i < N_POINTS; i++) {
 		psi[i] /= N;
 	}
+	N = 0.0;
+	for (int i = 0; i < N_POINTS; i++) {
+		N += psi[i]*psi[i]*dx;
+	}
+	fprint_double_newline(stdout, N);
+	for (int i = 0; i < N_POINTS; i++) {
+		psi[i] /= N;
+	}
+	N = 0.0;
+	for (int i = 0; i < N_POINTS; i++) {
+		N += psi[i]*psi[i]*dx;
+	}
+	fprint_double_newline(stdout, N);
 
 	/* print to file */
 	FILE *file;
