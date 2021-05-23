@@ -149,7 +149,7 @@ void print_eigenfunction(double E, void *param) {
 	for (int i = 0; i < N_POINTS; i++) {
 		N += psi[i]*psi[i]*dx;
 	}
-	for (int i = 0; i < N_POINTS: i++) {
+	for (int i = 0; i < N_POINTS; i++) {
 		psi[i] /= sqrt(N);
 	}
 
@@ -157,7 +157,7 @@ void print_eigenfunction(double E, void *param) {
 	/* print to file */
 	FILE *file;
 	file = fopen("eigenfunction.csv", "w");
-	
+	// fprintf(file, "x\tpsi\n");
 	
 	for (int i = 0; i < N_POINTS; i++) {
 		fprint_double(file, x[i]);
