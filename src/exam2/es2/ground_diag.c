@@ -54,7 +54,6 @@ int main() {
 	int info = diagonalize_tridiag_double(N, diag, subdiag, (double *)res_eigvec, res_eigval);
 	assert(info == 0);
 
-	printf("Starting calculating...\n\n");
 
 	int cnt_bound = 0;
 	for (int i = 0; i < N; i++) {
@@ -64,7 +63,7 @@ int main() {
 		printf("E_%d = %g\n", i, res_eigval[i]);
 		cnt_bound++;
 	}
-    printf("Printing eigenfunction to file.\n");
+    printf("\nPrinting eigenfunction to file.\n");
     FILE *f;
     f = fopen("eigenfunction_diag.csv", "w");
     // fprintf(f, "x\tpsi\n");
