@@ -37,7 +37,7 @@ int main(){
 
     /* split operator method */
     double T = 2048.0;
-    double dt = 1.0/16.0;
+    double dt = 1.0;
     complex double K, rho[N], eta[N];
     
     for(int i=0;i<N;i++){
@@ -271,13 +271,12 @@ void points_of_maximum(double x[], double f[], int N, double *m1, double *m2){
 
     /* first point of maximum */
     double point = 0.0;
-    int pos = 0;
-    double max1 = 0.0;
+
+    double max1 = -1.0;
     for(int i=cnt;i<N;i++){
         if(f[i] >= max1){
             max1 = f[i];
             point = x[i];
-            pos = i;
         }
     }
     *m1 = point;
