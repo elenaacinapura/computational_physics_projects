@@ -149,8 +149,8 @@ void print_eigenfunction(double E, void *param) {
 	for (int i = 0; i < N_POINTS; i++) {
 		N += psi[i]*psi[i]*dx;
 	}
-	for (int i = 0; i < N_POINTS; i++) {
-		N += psi[i]*psi[i]*dx;
+	for (int i = 0; i < N_POINTS: i++) {
+		psi[i] /= sqrt(N);
 	}
 
 
