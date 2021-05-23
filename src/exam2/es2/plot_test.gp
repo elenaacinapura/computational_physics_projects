@@ -8,10 +8,10 @@ plot "spectrum.csv" using 1:2 w l lt 7
 pause -1
 
 ####### PROBABILITY ##########
-#set xrange [0:3000]
-#set yrange [0:1]
-#plot "probability.csv" using 1:2 w l lt 7
-#pause -1
+set xrange [0:3000]
+set yrange [0:1]
+plot "probability.csv" using 1:2 w l lt 7
+pause -1
 
 ######## ANIMATION ############
 #set xrange [-1.5:1.5]

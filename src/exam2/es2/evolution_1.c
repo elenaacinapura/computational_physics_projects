@@ -36,15 +36,15 @@ int main(){
     read_ground(x,psi,N);
 
     /* split operator method */
-    double T = 500.0;
-    double dt = 1.0;
+    double T = 2048.0;
+    double dt = 1.0/16.0;
     complex double K, rho[N], eta[N];
     
     for(int i=0;i<N;i++){
 
         V[i] = potential(x[i]);
         rho[i] = cexp(-I * V[i] * dt);
-        K = I * 2 * M_PI / L * ( i <= N/2 ? i : i - N );
+        K = I * 2.0 * M_PI / L * ( i <= N/2 ? i : i - N );
         eta[i] = cexp( I * xi * K * K * dt );
 
     }
@@ -58,8 +58,8 @@ int main(){
     /******************** EVOLUTION *******************/
     if(!TYPE){
         
-        T = pow(2,12);
-        dt = 1.0;
+        // T = pow(2,12);
+        // dt = 1.0;
 
         int tau = (int)(T/dt);
         assert(tau % 2 == 0);
@@ -216,19 +216,14 @@ void run_for_animation(double T, double dt, double x[], double V[], complex doub
 }
 
 double integrate_for_p(complex double Psi[], double x[], int N){
-    
-    int cnt = 0;
+
     double dx = x[1] - x[0];
     double res = 0.0;
-    while(x[cnt] < 0.0){
-        res += 0.0;
-        cnt++;
+    for (int i = 0; i < N; i++) {
+        if (x[i] > 0.0) {
+            res += pow(cabs(Psi[i]),2) * dx;
+        }
     }
-    while(cnt < N){
-        res += pow(cabs(Psi[cnt]),2) * dx;
-        cnt++;
-    }
-
     return res;
 }
 
