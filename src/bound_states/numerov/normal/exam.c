@@ -82,6 +82,8 @@ int main() {
 		printf("\nPrinting eigenfunction to file.\n");
 		print_eigenfunction(E, &p);
 	}
+	printf("The program ended successfully!\n");
+	printf("=================================================\n");
 }
 /*================ FUNCTIONS ==============*/
 double Potential(double x) {
@@ -180,7 +182,7 @@ void print_eigenfunction(double E, void *param) {
 		fprint_double(file, xF[i]);
 		fprint_double_newline(file, phiF[i]);
 	}
-	for (int i = dimB - 1; i > 0; i--) {
+	for (int i = dimB - 2; i >= 0; i--) {
 		fprint_double(file, xB[i]);
 		fprint_double_newline(file, phiB[i]);
 	}
