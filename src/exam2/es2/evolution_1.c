@@ -275,8 +275,8 @@ void points_of_maximum(double x[], double f[], int N, double *m1, double *m2){
     }
 
     /* first point of maximum */
-    double point;
-    int pos;
+    double point = 0.0;
+    int pos = 0;
     double max1 = 0.0;
     for(int i=cnt;i<N;i++){
         if(f[i] >= max1){
