@@ -7,7 +7,11 @@ set (CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsan
 set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 add_subdirectory(extern/computational_physics_lib)
+
 # List here the directories in src
+add_subdirectory(src/Scattering)
+add_subdirectory(src/Tunneling)
+
 add_subdirectory(src/lennard_jones_fluid)
 add_subdirectory(src/tunneling)
 add_subdirectory(src/sommerfeld)
