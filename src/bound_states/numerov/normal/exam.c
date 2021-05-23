@@ -108,14 +108,14 @@ double Delta_E(double E, void *param) {
 	xF[0] = LEFT_LIM;
 	xF[1] = LEFT_LIM + dx;
 	phiF[0] = 0.0;
-	phiF[1] = -1e-3;
+	phiF[1] = -1e-5;
 	// fprint_double_newline(stdout, phiF[1]);
 	execute_numerov(xF, phiF, dx, dimF, F, p);
 	/* phiB */
 	xB[0] = RIGHT_LIM;
 	xB[1] = RIGHT_LIM - dx;
 	phiB[0] = 0.0;
-	phiB[1] = -1.0;
+	phiB[1] = 1e-3;
 	execute_numerov(xB, phiB, -dx, dimB, F, p);
 
 	double R = phiF[dimF - 1] / phiB[dimB - 1];
@@ -143,13 +143,13 @@ void print_eigenfunction(double E, void *param) {
 	xF[0] = LEFT_LIM;
 	xF[1] = LEFT_LIM + dx;
 	phiF[0] = 0.0;
-	phiF[1] = 2.0;
+	phiF[1] = 1e-40;
 	execute_numerov(xF, phiF, dx, dimF, F, p);
 	/* phiB */
 	xB[0] = RIGHT_LIM;
 	xB[1] = RIGHT_LIM - dx;
 	phiB[0] = 0.0;
-	phiB[1] = -1.0;
+	phiB[1] = 1e-40;
 	execute_numerov(xB, phiB, -dx, dimB, F, p);
 
 	double R = phiF[dimF - 1] / phiB[dimB - 1];
@@ -160,10 +160,10 @@ void print_eigenfunction(double E, void *param) {
 	/* normalize  */
 	double N = 0.0;
 	for (int i = 0; i < dimF; i++) {
-		N += phiF[i];
+		N += phiF[i]*phiF[i]*dx;
 	}
 	for (int i = 1; i < dimB; i++) {
-		N += phiB[i];
+		N += phiB[i]*phiB[i]*dx;
 	}
 	for (int i = 0; i < dimF; i++) {
 		phiF[i] /= N;
