@@ -27,18 +27,19 @@ double Delta_E(double E, void *param);
 void print_eigenfunction(double E, void *param);
 /*================ MAIN ===============*/
 int main() {
-	double final_left_lim = - N_POINTS * dx;
+	double final_left_lim = -N_POINTS * dx;
 	/*============ Welcome ============*/
-	printf("=================================================\n");
+	printf("===================================================================\n");
 	printf("FIND THE GROUND STATE WITH NUMEROV ALGORITHM\n");
-	printf("=================================================\n");
+	printf("===================================================================\n");
 	printf("Parameters:\n");
 	printf("\txi = hbar^2 / (m V0 a^2) = %.3lf\n", xi);
-	printf("\tInterval: [%.1lf, %.1lf]\n", final_left_lim, RIGHT_LIM);
+	printf("\tInterval: [%.3lf, %.1lf]\n", final_left_lim, RIGHT_LIM);
 	printf("\tdx = %.4lf\n", dx);
 	printf("\tMeeting point x0 = %.1lf\n", x0);
-    printf("\tNumber of points N = %d\n", N_POINTS);
-	printf("\nStarting calculating...\n\n");
+	printf("\tNumber of points N = %d\n", N_POINTS);
+	printf("===================================================================\n");
+	printf("Starting calculating...\n");
 
 	double a = 1.0 / xi;
 	Params p;
@@ -64,6 +65,7 @@ int main() {
 			if (delta_new * delta <= 0.0) {
 				if ((delta_new > delta && delta > delta_old) || (delta_new < delta && delta < delta_old)) {
 					E_ground = zero_bisection(Delta_E, E - dE, E, &p);
+					printf("Ground state found!\n");
 					printf("E0 = %lf\n", E_ground);
 					break;
 				}
@@ -77,12 +79,15 @@ int main() {
 
 		E += dE;
 	}
+	printf("The program ended successfully!\n");
+	printf("===================================================================\n");
 	if (E_ground > -0.9) {
-		printf("\nPrinting eigenfunction to file.\n");
+		printf("Printing eigenfunction to file.\n");
 		print_eigenfunction(E, &p);
 	}
-	printf("The program ended successfully!\n");
-	printf("=================================================\n");
+	printf("===================================================================\n");
+	printf("Showing plot of the ground state eigenfunction.\n");
+	printf("===================================================================\n");
 }
 /*================ FUNCTIONS ==============*/
 double Potential(double x) {
@@ -147,18 +152,17 @@ void print_eigenfunction(double E, void *param) {
 	/* Normalize */
 	double N = 0.0;
 	for (int i = 0; i < N_POINTS; i++) {
-		N += psi[i]*psi[i]*dx;
+		N += psi[i] * psi[i] * dx;
 	}
 	for (int i = 0; i < N_POINTS; i++) {
 		psi[i] /= sqrt(N);
 	}
 
-
 	/* print to file */
 	FILE *file;
 	file = fopen("eigenfunction.csv", "w");
 	// fprintf(file, "x\tpsi\n");
-	
+
 	for (int i = 0; i < N_POINTS; i++) {
 		fprint_double(file, x[i]);
 		fprint_double_newline(file, psi[i]);

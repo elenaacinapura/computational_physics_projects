@@ -1,33 +1,33 @@
 #======================= GROUND STATE ===========================
+# numerov
 add_executable(tunneling-ground-numerov ground_numerov.c routines.c)
 
 target_compile_options(tunneling-ground-numerov PRIVATE -Wall -O3 -march=native)
 
 target_link_libraries(tunneling-ground-numerov compphy-lib)
 
-add_custom_target(run-tunneling-ground-numerov
-    COMMAND tunneling-ground-numerov
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ground_numerov.py
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+)
+     
+add_custom_target(run-es2-1-numerov
+    COMMAND tunneling-ground-numerov && python ground_numerov.py 2>&1 | grep -v 'libGL'
     DEPENDS tunneling-ground-numerov
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ground_numerov.py
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-add_custom_target(plot-bound-numerov-exam
-    COMMAND python ground_numerov.py 2>&1 | grep -v 'libGL'
-    DEPENDS ground_numerov.py
-    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
-)
-#
+    
+# diag
 add_executable(tunneling-ground-diag ground_diag.c)
 
 target_compile_options(tunneling-ground-diag PRIVATE -Wall -O3 -march=native)
 
 target_link_libraries(tunneling-ground-diag compphy-lib)
 
-add_custom_target(run-tunneling-ground-diag
-    COMMAND tunneling-ground-diag
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ground_diag.py
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+)
+add_custom_target(run-es2-1-diag
+    COMMAND tunneling-ground-diag && python ground_diag.py 2>&1 | grep -v 'libGL'
     DEPENDS tunneling-ground-diag
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
@@ -40,9 +40,6 @@ target_compile_options(tunneling-evol1 PRIVATE -Wall -O3 -march=native)
 
 target_link_libraries(tunneling-evol1 m compphy-lib gsl blas)
 
-####### TEST, DA CANCELLARE ########
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_test.gp
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(plot-tunneling-test
      COMMAND gnuplot plot_test.gp
