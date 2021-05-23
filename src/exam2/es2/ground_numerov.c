@@ -156,7 +156,7 @@ void print_eigenfunction(double E, void *param) {
 	/* print to file */
 	FILE *file;
 	file = fopen("eigenfunction.csv", "w");
-	fprintf(file, "x\tpsi\n");
+	// fprintf(file, "x\tpsi\n");
 	
 	for (int i = 0; i < N_POINTS; i++) {
 		fprint_double(file, x[i]);
