@@ -136,44 +136,6 @@ void print_eigenfunction(double E, void *param) {
 	Params *p = (Params *)param;
 	p->E = E;
 
-	// /* Create arrays: forward and backward*/
-	// int dimF = (int)ceil((x0 - LEFT_LIM) / dx) + 1;
-	// int dimB = (int)ceil((RIGHT_LIM - x0) / dx) + 1;
-	// double xF[dimF], xB[dimB];
-	// double phiF[dimF], phiB[dimB];
-
-	// /* phiF */
-	// xF[0] = LEFT_LIM;
-	// xF[1] = LEFT_LIM + dx;
-	// phiF[0] = 0.0;
-	// phiF[1] = 1e-40;
-	// execute_numerov(xF, phiF, dx, dimF, F, p);
-	// /* phiB */
-	// xB[0] = RIGHT_LIM;
-	// xB[1] = RIGHT_LIM - dx;
-	// phiB[0] = 0.0;
-	// phiB[1] = 1e-40;
-	// execute_numerov(xB, phiB, -dx, dimB, F, p);
-
-	// double R = phiF[dimF - 1] / phiB[dimB - 1];
-	// for (int i = 0; i < dimB; i++) {
-	// 	phiB[i] *= R;
-	// }
-	// /* normalize  */
-	// double N = 0.0;
-	// for (int i = 0; i < dimF; i++) {
-	// 	N += phiF[i]*phiF[i]*dx;
-	// }
-	// for (int i = 1; i < dimB; i++) {
-	// 	N += phiB[i]*phiB[i]*dx;
-	// }
-	// for (int i = 0; i < dimF; i++) {
-	// 	phiF[i] /= N;
-	// }
-	// for (int i = 1; i < dimB; i++) {
-	// 	phiB[i] /= N;
-	// }
-	
 	/* Create array */
 	double x[N_POINTS];
 	double psi[N_POINTS];
@@ -197,14 +159,7 @@ void print_eigenfunction(double E, void *param) {
 	FILE *file;
 	file = fopen("eigenfunction.csv", "w");
 	fprintf(file, "x\tpsi\n");
-	// for (int i = 0; i < dimF; i++) {
-	// 	fprint_double(file, xF[i]);
-	// 	fprint_double_newline(file, phiF[i]);
-	// }
-	// for (int i = dimB - 2; i >= 0; i--) {
-	// 	fprint_double(file, xB[i]);
-	// 	fprint_double_newline(file, phiB[i]);
-	// }
+	
 	for (int i = 0; i < N_POINTS; i++) {
 		fprint_double(file, x[i]);
 		fprint_double_newline(file, psi[i]);
