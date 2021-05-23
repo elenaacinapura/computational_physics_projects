@@ -3,6 +3,7 @@ reset
 set term qt 0
 
 ####### SPECTRUM ##########
+set xrange[0:0.5]
 plot "spectrum.csv" using 1:2 w l lt 7
 pause -1
 

@@ -12,20 +12,15 @@
 #define TYPE 0 // 1 for animation
 
 /* --------------------------- */
-typedef struct VecZ{
-    complex double v[DIM_MAX];
-    int dim;
-}VecZ;
-
-/* --------------------------- */
 void read_ground(double x[], double psi[], int N);
 double potential(double x);
 void evolution_step(complex double psi[], complex double rho[], complex double eta[], int N);
 void run_for_animation(double T, double dt, double x[], double V[], complex double Psi[], 
                 complex double rho[], complex double eta[], int N);
 double integrate_for_p(complex double Psi[], double x[], int N);
-void save_transform_abs(FILE *file, complex double f[], double L, int N);
+void fourier_analysis(FILE *file, complex double f[], double L, int N, double *m1, double *m2);
 double calculate_norm(double x[], complex double Psi[], int N);
+void two_points_of_maximum(double x[], double f[], int N, double *m1, double *m2);
 
 /************************** MAIN *********************************/
 int main(){
@@ -35,13 +30,12 @@ int main(){
     double L = 2.0 * 4.096;
 
     /* ground state energy */
-    //double E_0 = -0.018028;
     int N = 2 * 4096;
     double x[N], psi[N], V[N];
     read_ground(x,psi,N);
 
     /* split operator method */
-    double T = pow(2.0,5.0);
+    double T = pow(2,12);
     double dt = 1.0;
     complex double K, rho[N], eta[N];
     
@@ -60,68 +54,50 @@ int main(){
         Psi[i] = psi[i];
     }
 
-    /* evolution */
+    /******************** EVOLUTION *******************/
     if(!TYPE){
         
-        VecZ p_time;
+        int tau = (int)(T/dt);
+        assert(tau % 2 == 0);
+        complex double p_time[tau];
         double prob;
-        p_time.dim = 0;
-
+        
         FILE *f_p;
         f_p = fopen("probability.csv","w");
         assert(f_p != NULL);
         
         double t = 0.0;
+        int cnt = 0;
         do{
 
             prob = integrate_for_p(Psi,x,N);
-            p_time.v[p_time.dim] = prob;
+            p_time[cnt] = prob;
 
             fprint_double(f_p,t);
             fprint_double_newline(f_p,prob);
             
             evolution_step(Psi,rho,eta,N);
             t += dt;
-            p_time.dim++;
+            cnt++;
 
         }while(t < T);
         fclose(f_p);
     
         /* spectral analysis */ 
-        int dim = p_time.dim;
-        printf("dimesione = %d\n",dim);
-        complex double P_time[dim];
-        for(int i=0;i<dim;i++){
-            P_time[i] = p_time.v[i];
-        }
-
+        double m1,m2;
         FILE *f_spectrum;
         f_spectrum = fopen("spectrum.csv","w");
-        save_transform_abs(f_spectrum,P_time,T,dim);
+        fourier_analysis(f_spectrum,p_time,T,tau,&m1,&m2);
         fclose(f_spectrum);
+        printf("max1 = %lf\t max2 = %lf\n",m1,m2);
     
     }
-    
 
-    /* animation */
+    /********************* ANIMATION *************************/
     if(TYPE){
         run_for_animation(T,dt,x,V,Psi,rho,eta,N);
     }
-
-
     
-    // /* test */
-    // FILE *fp;
-    // fp = fopen("test.csv","w");
-    // for(int i=0;i<N;i++){
-    //     fprint_double(fp,x[i]);
-    //     fprint_double(fp,V[i]);
-    //     fprint_double(fp,psi[i]);
-    //     fprint_double(fp,creal(Psi[i]));
-    //     fprint_double_newline(fp,cimag(Psi[i]));
-    // }
-    // fclose(fp);
-
 
 }
 /*****************************************************************/
@@ -243,7 +219,7 @@ double integrate_for_p(complex double Psi[], double x[], int N){
     return res;
 }
 
-void save_transform_abs(FILE *file, complex double f[], double L, int N){
+void fourier_analysis(FILE *file, complex double f[], double L, int N, double *m1, double *m2){
 
     gsl_fft_complex_radix2_forward((double *)f,1,N);
 
@@ -265,6 +241,8 @@ void save_transform_abs(FILE *file, complex double f[], double L, int N){
         fprint_double_newline(file,f_abs_ord[n]);
     }
 
+    two_points_of_maximum(k_ord,f_abs_ord,N,m1,m2);
+
 }
 
 double calculate_norm(double x[], complex double Psi[], int N){
@@ -274,4 +252,33 @@ double calculate_norm(double x[], complex double Psi[], int N){
         norm += pow(cabs(Psi[i]),2) * dx;
     }
     return norm;
+}
+
+void two_points_of_maximum(double x[], double f[], int N, double *m1, double *m2){
+
+    int cnt = 0;
+    while(x[cnt] < EPS){
+        cnt++;
+    }
+    
+    double point;
+
+    double max1 = 0.0;
+    for(int i=cnt;i<N;i++){
+        if(f[i] >= max1){
+            max1 = f[i];
+            point = x[i];
+        }
+    }
+    *m1 = point;
+
+    double max2 = 0.0;
+    for(int i=cnt;i<N;i++){
+        if( ( f[i] >= max2 ) && ( f[i] < max1 ) ){
+            max2 = f[i];
+            point = x[i];
+        }
+    }
+    *m2 = point;
+
 }

@@ -38,8 +38,10 @@ add_executable(tunneling-evol1 evolution_1.c)
 
 target_compile_options(tunneling-evol1 PRIVATE -Wall -O3 -march=native)
 
-target_link_libraries(tunneling-evol1 m compphy-lib gsl blas)
+target_link_libraries(tunneling-evol1 m compphy-lib gsl openblas)
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_test.gp
+DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(plot-tunneling-test
      COMMAND gnuplot plot_test.gp
