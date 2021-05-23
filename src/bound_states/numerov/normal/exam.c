@@ -8,6 +8,7 @@
 #include "../routines.h"
 
 /*================ PARAMETERS ===============*/
+int N_POINTS = 4096;
 const double xi = 0.015;
 const double LEFT_LIM = -4.1;
 const double RIGHT_LIM = 0.0;
@@ -28,17 +29,17 @@ void print_eigenfunction(double E, void *param);
 int main() {
     int dimF = (int)ceil((x0 - LEFT_LIM) / dx) + 1;
 	int dimB = (int)ceil((RIGHT_LIM - x0) / dx) + 1;
-    int N = dimF + dimB -1;
+	double final_left_lim = - N_POINTS * dx;
 	/*============ Welcome ============*/
 	printf("=================================================\n");
 	printf("FIND THE GROUND STATE WITH NUMEROV ALGORITHM\n");
 	printf("=================================================\n");
 	printf("Parameters:\n");
 	printf("\txi = hbar^2 / (m V0 a^2) = %.3lf\n", xi);
-	printf("\tInterval: [%.1lf, %.1lf]\n", LEFT_LIM, RIGHT_LIM);
+	printf("\tInterval: [%.1lf, %.1lf]\n", final_left_lim, RIGHT_LIM);
 	printf("\tdx = %.4lf\n", dx);
 	printf("\tMeeting point x0 = %.1lf\n", x0);
-    printf("\tNumber of points N = %d\n", N);
+    printf("\tNumber of points N = %d\n", N_POINTS);
 	printf("\nStarting calculating...\n\n");
 
 	double a = 1.0 / xi;
@@ -135,56 +136,78 @@ void print_eigenfunction(double E, void *param) {
 	Params *p = (Params *)param;
 	p->E = E;
 
-	/* Create arrays: forward and backward*/
-	int dimF = (int)ceil((x0 - LEFT_LIM) / dx) + 1;
-	int dimB = (int)ceil((RIGHT_LIM - x0) / dx) + 1;
-	double xF[dimF], xB[dimB];
-	double phiF[dimF], phiB[dimB];
+	// /* Create arrays: forward and backward*/
+	// int dimF = (int)ceil((x0 - LEFT_LIM) / dx) + 1;
+	// int dimB = (int)ceil((RIGHT_LIM - x0) / dx) + 1;
+	// double xF[dimF], xB[dimB];
+	// double phiF[dimF], phiB[dimB];
 
-	/* phiF */
-	xF[0] = LEFT_LIM;
-	xF[1] = LEFT_LIM + dx;
-	phiF[0] = 0.0;
-	phiF[1] = 1e-40;
-	execute_numerov(xF, phiF, dx, dimF, F, p);
-	/* phiB */
-	xB[0] = RIGHT_LIM;
-	xB[1] = RIGHT_LIM - dx;
-	phiB[0] = 0.0;
-	phiB[1] = 1e-40;
-	execute_numerov(xB, phiB, -dx, dimB, F, p);
+	// /* phiF */
+	// xF[0] = LEFT_LIM;
+	// xF[1] = LEFT_LIM + dx;
+	// phiF[0] = 0.0;
+	// phiF[1] = 1e-40;
+	// execute_numerov(xF, phiF, dx, dimF, F, p);
+	// /* phiB */
+	// xB[0] = RIGHT_LIM;
+	// xB[1] = RIGHT_LIM - dx;
+	// phiB[0] = 0.0;
+	// phiB[1] = 1e-40;
+	// execute_numerov(xB, phiB, -dx, dimB, F, p);
 
-	double R = phiF[dimF - 1] / phiB[dimB - 1];
-	for (int i = 0; i < dimB; i++) {
-		phiB[i] *= R;
-	}
+	// double R = phiF[dimF - 1] / phiB[dimB - 1];
+	// for (int i = 0; i < dimB; i++) {
+	// 	phiB[i] *= R;
+	// }
+	// /* normalize  */
+	// double N = 0.0;
+	// for (int i = 0; i < dimF; i++) {
+	// 	N += phiF[i]*phiF[i]*dx;
+	// }
+	// for (int i = 1; i < dimB; i++) {
+	// 	N += phiB[i]*phiB[i]*dx;
+	// }
+	// for (int i = 0; i < dimF; i++) {
+	// 	phiF[i] /= N;
+	// }
+	// for (int i = 1; i < dimB; i++) {
+	// 	phiB[i] /= N;
+	// }
+	
+	/* Create array */
+	double x[N_POINTS];
+	double psi[N_POINTS];
 
-	/* normalize  */
+	x[0] = -N_POINTS * dx;
+	x[1] = x[0] + dx;
+	psi[0] = 0.0;
+	psi[1] = 1e-40;
+	execute_numerov(x, psi, dx, N_POINTS, F, p);
+
+	/* Normalize */
 	double N = 0.0;
-	for (int i = 0; i < dimF; i++) {
-		N += phiF[i]*phiF[i]*dx;
+	for (int i = 0; i < N_POINTS; i++) {
+		N += psi[i]*psi[i]*dx;
 	}
-	for (int i = 1; i < dimB; i++) {
-		N += phiB[i]*phiB[i]*dx;
-	}
-	for (int i = 0; i < dimF; i++) {
-		phiF[i] /= N;
-	}
-	for (int i = 1; i < dimB; i++) {
-		phiB[i] /= N;
+	for (int i = 0; i < N_POINTS; i++) {
+		psi[i] /= N;
 	}
 
 	/* print to file */
 	FILE *file;
 	file = fopen("eigenfunction.csv", "w");
 	fprintf(file, "x\tpsi\n");
-	for (int i = 0; i < dimF; i++) {
-		fprint_double(file, xF[i]);
-		fprint_double_newline(file, phiF[i]);
-	}
-	for (int i = dimB - 2; i >= 0; i--) {
-		fprint_double(file, xB[i]);
-		fprint_double_newline(file, phiB[i]);
+	// for (int i = 0; i < dimF; i++) {
+	// 	fprint_double(file, xF[i]);
+	// 	fprint_double_newline(file, phiF[i]);
+	// }
+	// for (int i = dimB - 2; i >= 0; i--) {
+	// 	fprint_double(file, xB[i]);
+	// 	fprint_double_newline(file, phiB[i]);
+	// }
+	for (int i = 0; i < N_POINTS; i++) {
+		fprint_double(file, x[i]);
+		fprint_double_newline(file, psi[i]);
 	}
 	fclose(file);
 }
