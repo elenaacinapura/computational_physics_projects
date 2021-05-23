@@ -1,0 +1,48 @@
+#======================= GROUND STATE ===========================
+add_executable(tunneling-ground-numerov ground_numerov.c ../routines.c)
+
+target_compile_options(tunneling-ground-numerov PRIVATE -Wall -O3 -march=native)
+
+target_link_libraries(tunneling-ground-numerov compphy-lib)
+
+add_custom_target(run-tunneling-ground-numerov
+    COMMAND tunneling-ground-numerov
+    DEPENDS tunneling-ground-numerov
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ground_numerov.py
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_target(plot-bound-numerov-exam
+    COMMAND python ground_numerov.py 2>&1 | grep -v 'libGL'
+    DEPENDS ground_numerov.py
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+
+#======================= EVOLUTIION ===========================
+
+add_executable(tunneling-evol1 exam.c ../routines.c)
+
+target_compile_options(tunneling-evol1 PRIVATE -Wall -O3 -march=native)
+
+target_link_libraries(tunneling-evol1 compphy-lib)
+
+add_custom_target(run-tunneling-evol1
+    COMMAND tunneling-evol1
+    DEPENDS tunneling-evol1
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+
+#----------------
+add_executable(tunneling-evol2 exam.c ../routines.c)
+
+target_compile_options(tunneling-evol2 PRIVATE -Wall -O3 -march=native)
+
+target_link_libraries(tunneling-evol2 compphy-lib)
+
+add_custom_target(run-tunneling-evol2
+    COMMAND tunneling-evol2
+    DEPENDS tunneling-evol2
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
