@@ -4,23 +4,15 @@
 #include <assert.h>
 #include <gsl/gsl_fft_complex.h>
 #include <print_routines.h>
+#include <linear_algebra/blas_wrappers.h>
 
 /* --------------------------- */
 #define EPS 1e-6
 
 /* --------------------------- */
-// typedef struct Param_pot{
-//     double v,a;
-// }Param_pot;
-
-/* --------------------------- */
-//const double T = 250.0;
-
-/* --------------------------- */
 void read_ground(double x[], double psi[], int N);
 double potential(double x);
-// complex double potential(const double x, Param_pot *p);
-// void evolution_step(complex double psi[], complex double rho[], complex double eta[]);
+void evolution_step(complex double psi[], complex double rho[], complex double eta[], int N);
 // void calculate_norms(double x[], complex double psi[], double *n1, double *n2);
 
 /************************** MAIN *********************************/
@@ -33,15 +25,11 @@ int main(){
     /* ground state energy */
     double E_0 = -0.018028;
     int N = 2 * 4096;
-    double dx, x[N], psi[N];
+    double dx, x[N], psi0[N], psi[N], V[N];
     read_ground(x,psi,N);
+    vec_copy(N,psi,psi0);
     dx = x[1] - x[0];
 
-    /* potential */
-    double V[N];
-    for(int i=0;i<N;i++){
-        V[i] = potential(x[i]);
-    }
 
     /* split operator method */
     double T = 1000.0;
@@ -57,6 +45,21 @@ int main(){
 
     }
 
+    /* complexification of psi */
+    complex double Psi[N];
+    for(int i=0;i<N;i++){
+        Psi[i] = psi[i];
+    }
+
+    /* evolution */
+    double t = 0.0;
+    do{
+
+        evolution_step(Psi,rho,eta,N);
+        t += dt;
+
+    }while(t < T);
+
     
     /* test */
     FILE *fp;
@@ -64,7 +67,8 @@ int main(){
     for(int i=0;i<N;i++){
         fprint_double(fp,x[i]);
         fprint_double(fp,V[i]);
-        fprint_double_newline(fp,psi[i]);
+        fprint_double(fp,creal(Psi[i]));
+        fprint_double_newline(fp,cimag(Psi[i]));
     }
     fclose(fp);
 
@@ -113,26 +117,22 @@ double potential(double x){
     return x * x * (x - 1);
 }
 
-// complex double potential(const double x, Param_pot *p){
-//     return 0.0;    
-// }
+void evolution_step(complex double psi[], complex double rho[], complex double eta[], int N){
 
-// void evolution_step(complex double psi[], complex double rho[], complex double eta[]){
+    /* potential phase shift */
+    for(int i=0;i<N;i++){
+        psi[i] *= rho[i];
+    }
 
-//     /* potential phase shift */
-//     for(int i=0;i<N;i++){
-//         psi[i] *= rho[i];
-//     }
+    /* kinetic energy phase shift */
+    gsl_fft_complex_radix2_forward((double *)psi,1,N);
 
-//     /* kinetic energy phase shift */
-//     gsl_fft_complex_radix2_forward((double *)psi,1,N);
+    for(int i=0;i<N;i++){
+        psi[i] *= eta[i];
+    }
 
-//     for(int i=0;i<N;i++){
-//         psi[i] *= eta[i];
-//     }
-
-//     gsl_fft_complex_radix2_inverse((double *)psi,1,N);
-// }
+    gsl_fft_complex_radix2_inverse((double *)psi,1,N);
+}
 
 // void calculate_norms(double x[], complex double psi[], double *n1, double *n2){
 //     int cnt = 0;
