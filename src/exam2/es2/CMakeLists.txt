@@ -19,6 +19,18 @@ add_custom_target(plot-bound-numerov-exam
     DEPENDS ground_numerov.py
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
+#
+add_executable(tunneling-ground-diag ground_diag.c)
+
+target_compile_options(tunneling-ground-diag PRIVATE -Wall -O3 -march=native)
+
+target_link_libraries(tunneling-ground-diag compphy-lib)
+
+add_custom_target(run-tunneling-ground-diag
+    COMMAND tunneling-ground-diag
+    DEPENDS tunneling-ground-diag
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
 
 #======================= EVOLUTIION ===========================
 
