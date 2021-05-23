@@ -24,24 +24,3 @@ add_custom_target(run-bound-numerov-lj
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
 
-#========================= EXAM 21-05-2021 ==============================
-add_executable(bound-numerov-exam exam.c ../routines.c)
-
-target_compile_options(bound-numerov-exam PRIVATE -Wall -O3 -march=native)
-
-target_link_libraries(bound-numerov-exam compphy-lib)
-
-add_custom_target(run-bound-numerov-exam
-    COMMAND bound-numerov-exam
-    DEPENDS bound-numerov-exam
-    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
-)
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/exam.py
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-add_custom_target(plot-bound-numerov-exam
-    COMMAND python exam.py 2>&1 | grep -v 'libGL'
-    DEPENDS exam.py
-    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
-)

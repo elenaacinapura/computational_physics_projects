@@ -5,7 +5,7 @@
 #include <numerical_methods/zero_bisection.h>
 #include <print_routines.h>
 
-#include "../routines.h"
+#include "routines.h"
 
 /*================ PARAMETERS ===============*/
 int N_POINTS = 4096;
@@ -27,8 +27,6 @@ double Delta_E(double E, void *param);
 void print_eigenfunction(double E, void *param);
 /*================ MAIN ===============*/
 int main() {
-    int dimF = (int)ceil((x0 - LEFT_LIM) / dx) + 1;
-	int dimB = (int)ceil((RIGHT_LIM - x0) / dx) + 1;
 	double final_left_lim = - N_POINTS * dx;
 	/*============ Welcome ============*/
 	printf("=================================================\n");

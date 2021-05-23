@@ -1,5 +1,5 @@
 #======================= GROUND STATE ===========================
-add_executable(tunneling-ground-numerov ground_numerov.c ../routines.c)
+add_executable(tunneling-ground-numerov ground_numerov.c routines.c)
 
 target_compile_options(tunneling-ground-numerov PRIVATE -Wall -O3 -march=native)
 
@@ -22,7 +22,7 @@ add_custom_target(plot-bound-numerov-exam
 
 #======================= EVOLUTIION ===========================
 
-add_executable(tunneling-evol1 exam.c ../routines.c)
+add_executable(tunneling-evol1 evolution_1.c)
 
 target_compile_options(tunneling-evol1 PRIVATE -Wall -O3 -march=native)
 
@@ -35,7 +35,7 @@ add_custom_target(run-tunneling-evol1
 )
 
 #----------------
-add_executable(tunneling-evol2 exam.c ../routines.c)
+add_executable(tunneling-evol2 evolution_2.c)
 
 target_compile_options(tunneling-evol2 PRIVATE -Wall -O3 -march=native)
 
