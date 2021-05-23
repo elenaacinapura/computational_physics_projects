@@ -11,7 +11,7 @@ psi = data['psi'].to_numpy()
 
 dim = len(x)
 dx = x[1]-x[0]
-print(dim)
+
 
 for i in range(dim):
     x = np.append(x, x[dim - 1 + i]+dx)
