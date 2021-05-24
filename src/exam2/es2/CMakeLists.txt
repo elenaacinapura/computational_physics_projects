@@ -40,6 +40,21 @@ target_compile_options(tunneling-evol1 PRIVATE -Wall -O3 -march=native)
 
 target_link_libraries(tunneling-evol1 m compphy-lib gsl openblas)
 
+add_custom_target(run-tunneling-evol1
+    COMMAND tunneling-evol1
+    DEPENDS tunneling-evol1
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_animation.gp
+DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_target(plot-tunneling-animation
+     COMMAND gnuplot plot_animation.gp
+     DEPENDS plot_animation.gp
+     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_test.gp
 DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -47,24 +62,4 @@ add_custom_target(plot-tunneling-test
      COMMAND gnuplot plot_test.gp
      DEPENDS plot_test.gp
      WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
- )
-############### 
-
-add_custom_target(run-tunneling-evol1
-    COMMAND tunneling-evol1
-    DEPENDS tunneling-evol1
-    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
-)
-
-#----------------
-add_executable(tunneling-evol2 evolution_2.c)
-
-target_compile_options(tunneling-evol2 PRIVATE -Wall -O3 -march=native)
-
-target_link_libraries(tunneling-evol2 m compphy-lib gsl blas)
-
-add_custom_target(run-tunneling-evol2
-    COMMAND tunneling-evol2
-    DEPENDS tunneling-evol2
-    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
