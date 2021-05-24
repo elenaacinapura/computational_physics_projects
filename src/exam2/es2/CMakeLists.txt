@@ -55,11 +55,11 @@ add_custom_target(plot-tunneling-animation
      WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_test.gp
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/probability.py
 DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(plot-es2-2
-     COMMAND gnuplot plot_test.gp
-     DEPENDS plot_test.gp
+     COMMAND python probability.py
+     DEPENDS probability.py
      WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )

@@ -10,7 +10,7 @@
 #define EPS 1e-6
 #define DIM_MAX (int)1e6
 #define TYPE 0			 // 1 for animation
-#define POTENTIALTYPE 1	 // 0 for Tunneling(1) and 1 for Tunneling(2)
+#define POTENTIALTYPE 0	 // 0 for Tunneling(1) and 1 for Tunneling(2)
 
 /* ========================== FUNCTION HEADERS ===========================*/
 void read_ground(double x[], double psi[], int N);
@@ -46,7 +46,7 @@ int main() {
 	printf("Parameters:\n");
 	printf("\txi = hbar^2 / (2 m a^2 V0) = %.3lf\n", xi);
     printf("\tType of potential: %d\n", POTENTIALTYPE);
-	printf("\tConsidered interval: [%.3lf, %.3lf]\n", -L, L);
+	printf("\tConsidered interval: [%.3lf, %.3lf]\n", -L/2, L/2);
 	printf("\tNumber of points N = %d\n", N);
 	printf("\tdt = %lf\n", dt);
 	printf("\tDuration of the evolution T = %.1lf\n", T);
