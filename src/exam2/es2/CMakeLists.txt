@@ -2,7 +2,7 @@
 # numerov
 add_executable(tunneling-ground-numerov ground_numerov.c routines.c)
 
-target_compile_options(tunneling-ground-numerov PRIVATE -Wall -O3 -march=native)
+target_compile_options(tunneling-ground-numerov PRIVATE -O3 -march=native)
 
 target_link_libraries(tunneling-ground-numerov compphy-lib)
 
@@ -19,7 +19,7 @@ add_custom_target(run-es2-1-numerov
 # diag
 add_executable(tunneling-ground-diag ground_diag.c)
 
-target_compile_options(tunneling-ground-diag PRIVATE -Wall -O3 -march=native)
+target_compile_options(tunneling-ground-diag PRIVATE -O3 -march=native)
 
 target_link_libraries(tunneling-ground-diag compphy-lib)
 
@@ -34,9 +34,9 @@ add_custom_target(run-es2-1-diag
 
 #======================= EVOLUTIION ===========================
 
-add_executable(tunneling-evol1 evolution_1.c)
+add_executable(tunneling-evol1 evolution.c)
 
-target_compile_options(tunneling-evol1 PRIVATE -Wall -O3 -march=native)
+target_compile_options(tunneling-evol1 PRIVATE -O3 -march=native)
 
 target_link_libraries(tunneling-evol1 m compphy-lib gsl openblas)
 
@@ -49,7 +49,7 @@ add_custom_target(run-es2-2
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_animation.gp
 DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_custom_target(plot-tunneling-animation
+add_custom_target(plot-es2-2-animation
      COMMAND gnuplot plot_animation.gp
      DEPENDS plot_animation.gp
      WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
@@ -58,7 +58,7 @@ add_custom_target(plot-tunneling-animation
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/probability.py
 DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_custom_target(plot-es2-2
+add_custom_target(plot-es2-2-prob
      COMMAND python probability.py
      DEPENDS probability.py
      WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}

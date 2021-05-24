@@ -9,7 +9,7 @@
 /* ========================== CONSTANTS AND SETTINGS ===========================*/
 #define EPS 1e-6
 #define DIM_MAX (int)1e6
-#define TYPE 0			 // 1 for animation
+#define TYPE 1			 // 1 for animation
 #define POTENTIALTYPE 0	 // 0 for Tunneling(1) and 1 for Tunneling(2)
 
 /* ========================== FUNCTION HEADERS ===========================*/
@@ -45,8 +45,8 @@ int main() {
 	printf("=====================================================================\n");
 	printf("Parameters:\n");
 	printf("\txi = hbar^2 / (2 m a^2 V0) = %.3lf\n", xi);
-    printf("\tType of potential: %d\n", POTENTIALTYPE);
-	printf("\tConsidered interval: [%.3lf, %.3lf]\n", -L/2, L/2);
+	printf("\tType of potential: %d\n", POTENTIALTYPE);
+	printf("\tConsidered interval: [%.3lf, %.3lf]\n", -L / 2, L / 2);
 	printf("\tNumber of points N = %d\n", N);
 	printf("\tdt = %lf\n", dt);
 	printf("\tDuration of the evolution T = %.1lf\n", T);
@@ -71,8 +71,6 @@ int main() {
 	/* NORMAL EVOLUTION, NO ANIMATION PLOT*/
 	if (!TYPE) {
 		printf("Calculating...\nState of the evolution:\n");
-		// T = pow(2,12);
-		// dt = 1.0;
 
 		/* Number of timesteps */
 		int tau = (int)(T / dt);
@@ -122,15 +120,15 @@ int main() {
 			printf("Second main frequency in the spectum w' = %lf\n", m2);
 			printf("Second main period T' = %lf\n", 2 * M_PI / m2);
 		}
+		printf("=====================================================================\n");
+		printf("Calculations ended! Now plotting p(t).\n");
+		printf("=====================================================================\n");
 	}
 
 	/* ANIMATION */
 	if (TYPE) {
 		run_for_animation(x, V, Psi, rho, eta, N);
 	}
-	printf("=====================================================================\n");
-	printf("Calculations ended! Now plotting p(t).\n");
-	printf("=====================================================================\n");
 }
 /* ========================== FUNCTIONS ===========================*/
 void read_ground(double x[], double psi[], int N) {
@@ -233,6 +231,8 @@ void run_for_animation(double x[], double V[], complex double Psi[],
 		fprintf(file, "\n");
 	}
 	fclose(file);
+	printf("Simulation ended! You can now plot the animation.\n");
+	printf("=====================================================================\n");
 }
 
 double integrate_for_p(complex double Psi[], double x[], int N) {
