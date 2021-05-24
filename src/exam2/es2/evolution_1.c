@@ -9,7 +9,7 @@
 /* --------------------------- */
 #define EPS 1e-6
 #define DIM_MAX (int)1e6
-#define TYPE 1 // 1 for animation
+#define TYPE 0 // 1 for animation
 #define POTENTIALTYPE 1 // 0 for Tunneling(1) and 1 for Tunneling(2)
 
 /* --------------------------- */
