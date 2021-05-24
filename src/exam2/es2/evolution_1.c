@@ -9,14 +9,14 @@
 /* --------------------------- */
 #define EPS 1e-6
 #define DIM_MAX (int)1e6
-#define TYPE 0 // 1 for animation
-#define POTENTIALTYPE 0 // 0 for Tunneling(1) and 1 for Tunneling(2)
+#define TYPE 1 // 1 for animation
+#define POTENTIALTYPE 1 // 0 for Tunneling(1) and 1 for Tunneling(2)
 
 /* --------------------------- */
 void read_ground(double x[], double psi[], int N);
 double potential(double x);
 void evolution_step(complex double psi[], complex double rho[], complex double eta[], int N);
-void run_for_animation(double T, double dt, double x[], double V[], complex double Psi[], 
+void run_for_animation(double x[], double V[], complex double Psi[], 
                 complex double rho[], complex double eta[], int N);
 double integrate_for_p(complex double Psi[], double x[], int N);
 void fourier_analysis(FILE *file, complex double f[], double L, int N, double *m1, double *m2);
@@ -101,7 +101,7 @@ int main(){
 
     /********************* ANIMATION *************************/
     if(TYPE){
-        run_for_animation(T,dt,x,V,Psi,rho,eta,N);
+        run_for_animation(x,V,Psi,rho,eta,N);
     }
     
 
@@ -173,8 +173,11 @@ void evolution_step(complex double psi[], complex double rho[], complex double e
     gsl_fft_complex_radix2_inverse((double *)psi,1,N);
 }
 
-void run_for_animation(double T, double dt, double x[], double V[], complex double Psi[], 
+void run_for_animation(double x[], double V[], complex double Psi[], 
                 complex double rho[], complex double eta[], int N){
+
+    double T = 1000.0;
+    double dt = 2.0;
 
     /* evolution, for the plot */
     const int stp = (int)ceil(T/dt);
