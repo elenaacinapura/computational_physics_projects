@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 data = pd.read_csv('solution.csv', delimiter='\t')
 r = data.iloc[:, 0]
 u = data.iloc[:, 1]
-print(u[0])
+
 
 #============= PLOT =============
 plt.figure('Gross-Pitaevskii')
