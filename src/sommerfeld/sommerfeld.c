@@ -27,7 +27,7 @@ int main () {
     printf("\n");
     printf("========================================================\n");
     printf("Calculating...\n");
-    bool stop = 0;
+    bool stop = 0;  /* will be set to 1 if I reached the end of bound states */
     for (int i = 0; i < num_xi; i++) {
         p.xi = xi[i];
         printf("---------------------------------------------\nxi = %.04lf\n", xi[i]);
