@@ -5,11 +5,11 @@
 #include <print_routines.h>
 
 /*============== PARAMETERS =============*/
-const double G = 5.0;
+const double G_target = 5.0;
 const double R = 5.0;
 const int N = 1024;
 const double alpha = 0.1;
-double dr;
+double dr, G;
 
 /* ===================== FUNCTION HEADERS ====================== */
 double u_0(double r);
@@ -19,10 +19,24 @@ double Vscf(double u, double r);
 double Vtot(double u, double r);
 void fill_H(double u[N], double diag[N], double subdiag[N - 1]); /* given u */
 double dist_L2(double u1[], double u2[]);
+double calculate_ex_energy(double u[]);
+double calculate_V(double u[]);
 
 /* ===================== FUNCTION HEADERS ====================== */
 int main() {
 	dr = R / (N - 1);
+
+	/* Welcome */
+	printf("=====================================================\n");
+	printf("GROSS-PYTAEVSKII'S METHOD\n");
+	printf("=====================================================\n");
+	printf("Parameters:\n");
+	printf("\tN = %d\n", N);
+	printf("\tR = %.1lf\n", R);
+	printf("\talpha (aka \"gentleness\") = %.3lf\n", alpha);
+	printf("\tG_target = a * N / lambda_H = %.1lf\n", G_target);
+	printf("=====================================================\n");
+	printf("Calculating...\n");
 
 	double u[N];
 	init_u(u);
@@ -33,33 +47,75 @@ int main() {
 	double dist, mu;
 	int cnt = 0;
 
-	do {
-		cnt++;
-		fill_H(u, diag, subdiag);
+	if (G_target > 20.0) {
+		double G_start = 1.0;
+		double dG = 1.0;
+		G = G_start;
+		while (G <= G_target + 0.1 * dG) {
+			fflush(stdout);
+			printf("\rCurrent G = %.1lf", G);
+			fflush(stdout);
+			do {
+				cnt++;
+				fill_H(u, diag, subdiag);
 
-		double res_eigval[N];
-		double res_eigvec[N][N];
-		int info = diagonalize_tridiag_double(N, diag, subdiag, (double *)res_eigvec, res_eigval);
-		assert(info == 0);
+				double res_eigval[N];
+				double res_eigvec[N][N];
+				int info = diagonalize_tridiag_double(N, diag, subdiag, (double *)res_eigvec, res_eigval);
+				assert(info == 0);
 
-		mu = res_eigval[0];
-		double u_new[N];
-		for (int i = 0; i < N; i++) {
-			u_new[i] = res_eigvec[0][i];
+				mu = res_eigval[0];
+				double u_new[N];
+				for (int i = 0; i < N; i++) {
+					u_new[i] = res_eigvec[0][i];
+				}
+				normalize(u_new);
+
+				for (int i = 0; i < N; i++) {
+					u_new[i] = alpha * u_new[i] + (1.0 - alpha) * u[i];
+				}
+				normalize(u_new);
+
+				dist = dist_L2(u, u_new);
+
+				vec_copy(N, u_new, u);
+			} while (dist > 1e-5);
+			G += dG;
 		}
-		normalize(u_new);
+	} else {
+		G = G_target;
+		do {
+			fflush(stdout);
+			printf("\rDistance from previous approximation = %lf", dist);
+			cnt++;
+			fill_H(u, diag, subdiag);
 
-		for (int i = 0; i < N; i++) {
-			u_new[i] = alpha * u_new[i] + (1.0 - alpha) * u[i];
-		}
-		normalize(u_new);
+			double res_eigval[N];
+			double res_eigvec[N][N];
+			int info = diagonalize_tridiag_double(N, diag, subdiag, (double *)res_eigvec, res_eigval);
+			assert(info == 0);
 
-		dist = dist_L2(u, u_new);
-		printf("\rcnt = %d\t dist = %lf", cnt, dist);
-		fflush(stdout);
+			mu = res_eigval[0];
+			double u_new[N];
+			for (int i = 0; i < N; i++) {
+				u_new[i] = res_eigvec[0][i];
+			}
+			normalize(u_new);
 
-		vec_copy(N, u_new, u);
-	} while (dist > 1e-5);
+			for (int i = 0; i < N; i++) {
+				u_new[i] = alpha * u_new[i] + (1.0 - alpha) * u[i];
+			}
+			normalize(u_new);
+
+			dist = dist_L2(u, u_new);
+
+			vec_copy(N, u_new, u);
+		} while (dist > 1e-5);
+	}
+
+	double V_ext = calculate_ex_energy(u);
+	double V_tot = calculate_V(u);
+	double K = mu - V_tot;
 
 	FILE *f;
 	f = fopen("solution.csv", "w");
@@ -71,8 +127,13 @@ int main() {
 	}
 	fclose(f);
 
-	printf("\nMu = ");
-	fprint_double_newline(stdout, mu);
+	printf("\n=====================================================\n");
+	printf("Results:\n");
+	printf("\tMu = %lf\n", mu);
+	printf("\t<V_tot> = %lf\n", V_tot);
+	printf("\t<V_ext> = %lf\n", V_ext);
+	printf("\t<K> = %lf\n", K);
+	printf("=====================================================\n");
 }
 
 /* ===================== FUNCTIONS ====================== */
@@ -119,4 +180,24 @@ double dist_L2(double u1[], double u2[]) {
 		res += fabs(u1[i] - u2[i]) * dr;
 	}
 	return res;
+}
+double calculate_ex_energy(double u[]) {
+	double res = 0.0;
+	for (int i = 0; i < N; i++) {
+		double r = (i + 1) * dr;
+		double phi = u[i] / (sqrt(4 * M_PI) * r);
+		res += 4 * M_PI * phi * phi * pow(r, 4) * dr;
+	}
+	return res;
+}
+double calculate_V(double u[]) {
+	double ex_V = calculate_ex_energy(u);
+	double int_V = 0.0;
+	for (int i = 0; i < N; i++) {
+		double r = (i + 1) * dr;
+		double phi = u[i] / (sqrt(4 * M_PI) * r);
+		double V = 8 * M_PI * G * phi * phi;
+		int_V += 4 * M_PI * phi * phi * V * r * r * dr;
+	}
+	return ex_V + int_V;
 }
