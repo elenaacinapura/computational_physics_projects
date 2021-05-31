@@ -10,6 +10,7 @@ add_subdirectory(extern/computational_physics_lib)
 
 # List here the directories in src
 add_subdirectory(src/bound_states)
+add_subdirectory(src/classical_scattering)
 add_subdirectory(src/dipolar_field)
 add_subdirectory(src/exam2)
 add_subdirectory(src/fft)
