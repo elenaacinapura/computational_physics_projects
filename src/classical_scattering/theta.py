@@ -18,6 +18,7 @@ plt.title(r'$\theta$ as a function of the impact parameter $b$')
 plt.xlabel(r'$b$')
 plt.ylabel(r'$\theta$', rotation=0)
 plt.legend()
+plt.show()
 
 #============= CROSS SECTION =============
 data = pd.read_csv('cross_section.csv', delimiter='\t')
@@ -29,6 +30,6 @@ plt.plot(theta, cnt, '.', c='r')
 plt.title(r'Reduced cross section')
 plt.xlabel(r'$\theta$')
 plt.ylabel(r'$\Sigma$', rotation=0)
-plt.show()
+
 
 print(' ')

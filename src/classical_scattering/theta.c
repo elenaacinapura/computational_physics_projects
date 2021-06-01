@@ -38,9 +38,9 @@ double integrand(double x, void *p) {
 double f(double x, void *p) {
 	return pow(x, 12) - b*b*pow(x, 10) + 4.0/E*pow(x, 6) - 4.0/E;
 }
-double find_theta_analytically(double b, double E) {
+double find_theta_analytically(double b) {
     struct Empty {} useless;
-	double rmin = zero_newton(f, 5.0, &useless);
+	double rmin = zero_newton(f, 10.0, &useless);
 	double theta = M_PI - 2.0 * integrate(integrand, rmin, 100.0, 1000, &useless);
 	return theta / M_PI * 180.0;
 }
@@ -65,13 +65,13 @@ int main() {
 		/* set initial conditions */
 		pos[0] = -x_0;
 		pos[1] = b;
-		v[0] = sqrt(E / 2.0);
+		v[0] = sqrt(2.0*E);
 		v[1] = 0.0;
 		/* execute verlet */
 		execute_verlet(pos, v, a);
 		/* extract the angle */
 		double theta = atan2(v[1], v[0]) / M_PI * 180.0;
-        double theta_theo = find_theta_analytically(b, E);
+        double theta_theo = find_theta_analytically(b);
 		/* print theta */
 		fprint_double(f_theta, b);
 		fprint_double(f_theta, theta);
