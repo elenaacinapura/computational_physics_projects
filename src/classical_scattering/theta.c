@@ -58,10 +58,10 @@ int main() {
 	printf("	dt = %lf\n", dt);
 	printf("	dtheta = %.2lf\n", dtheta);
 	printf("===================================================\n");
-
+	printf("Calculating theta(b).\n");
 	double pos[2], v[2], a[2];
 	int n_bins = (int)(180 / dtheta);
-	int dim = (int)((b_end - b_start) / db);
+	int dim = (int)((b_end - b_start) / db) + 1;
 	double b_vec[dim];
 	double theta_vec[dim];
 	double dtheta_db[dim];
@@ -78,7 +78,7 @@ int main() {
 	b = b_start;
 	for (int cnt = 0; cnt < dim; cnt++) {
 		fflush(stdout);
-		printf("\rcurrent b = %.3lf", b);
+		printf("\rCurrent b = %.2lf", b);
 		b_vec[cnt] = b;
 		/* set initial conditions */
 		pos[0] = -x_0;
@@ -99,6 +99,7 @@ int main() {
 		b += db;
 	}
 	fclose(f_theta);
+	printf("\nCalculating reduced cross section.\n");
 	/* ===================== REDUCED CROSS SECTION ======================= */
 	/* calculate dtheta/db */
 	dtheta_db[0] = (theta_vec[1] - theta_vec[0]) / db;
@@ -126,4 +127,6 @@ int main() {
 		fprint_double_newline(f_cs, cross_section[i]);
 	}
 	fclose(f_cs);
+	printf("===================================================\n");
+	printf("Calculations ended!\nPlotting the results.\n");
 }

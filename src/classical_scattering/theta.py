@@ -25,7 +25,7 @@ theta = data['theta']
 cnt = data['cnt']
 
 plt.figure('Classical scattering - cross section')
-plt.plot(theta, cnt, c='r')
+plt.plot(theta, cnt, c='lightgreen')
 plt.title(r'Reduced cross section')
 plt.xlabel(r'$\theta$')
 plt.ylabel(r'$\bar{\sigma}$', rotation=0)
