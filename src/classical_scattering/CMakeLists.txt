@@ -14,3 +14,9 @@ add_custom_target(run-theta
     DEPENDS theta
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
+
+add_custom_target(plot-theta
+    COMMAND python theta.py 2>&1 | grep -v 'libGL'
+    DEPENDS theta.py
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
