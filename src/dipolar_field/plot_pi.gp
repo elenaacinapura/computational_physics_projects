@@ -1,7 +1,7 @@
-set term epslatex color colortext size 6.4,8.0
-set output "dipolo_0.tex"
+# set term epslatex color colortext size 6.4,8.0
+# set output "dipolo_0.tex"
 
-# set term qt size 800, 1000
+set term qt size 800, 800
 
 
 set multiplot layout 3,2 title "\\textbf{Distribuzioni di probabilità per} $\\mathbf{\\theta = 0}$"
@@ -38,3 +38,4 @@ set ylabel "$\\pi(z^*)$"
 set title '$E^* = 5.0$'
 plot 'pi.csv' using 1:7 w lines lc 24 lt 7
 
+pause -1

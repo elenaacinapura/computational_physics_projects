@@ -9,13 +9,13 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/theta.py
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-add_custom_target(run-theta
+add_custom_target(run-classical-scattering
     COMMAND theta && python theta.py 2>&1 | grep -v 'libGL'
     DEPENDS theta
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
 
-add_custom_target(plot-theta
+add_custom_target(plot-classical-scattering
     COMMAND python theta.py 2>&1 | grep -v 'libGL'
     DEPENDS theta.py
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}

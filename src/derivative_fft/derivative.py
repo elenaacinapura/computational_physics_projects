@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
-import matplotlib.animation as animation
+
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
 data = pd.read_csv('parameters.csv', delimiter='\t')
 N = data['N'][0]
@@ -20,3 +22,5 @@ plt.plot(x, d, c='b', label='derivative')
 plt.xlabel('x')
 plt.legend()
 plt.show()
+
+print(" ")

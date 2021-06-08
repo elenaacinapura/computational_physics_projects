@@ -19,3 +19,5 @@ plt.plot(t, R, label='r', c='yellowgreen')
 plt.xlabel('t')
 plt.legend()
 plt.show()
+
+print(" ")

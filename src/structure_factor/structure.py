@@ -16,3 +16,5 @@ plt.xlabel('q')
 plt.ylabel('S', rotation=0)
 plt.legend()
 plt.show()
+
+print(" ")

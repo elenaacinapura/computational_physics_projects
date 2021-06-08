@@ -76,3 +76,5 @@ if (T_PLOT):
     plt.ylabel('T', rotation=0)
 
 plt.show()
+
+print(" ")

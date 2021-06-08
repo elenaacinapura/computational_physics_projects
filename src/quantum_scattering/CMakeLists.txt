@@ -4,11 +4,11 @@ target_compile_options(quantum_scattering PRIVATE -Wall -O3 -march=native -ffast
 
 target_link_libraries(quantum_scattering compphy-lib gsl)
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sigma_tot.gp
+DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 add_custom_target(run-quantum-scattering
-    COMMAND quantum_scattering
+    COMMAND quantum_scattering && gnuplot sigma_tot.gp
     DEPENDS quantum_scattering
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sigma_tot.gp
-DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

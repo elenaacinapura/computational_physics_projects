@@ -1,4 +1,0 @@
-add_subdirectory(derivative)
-add_subdirectory(gravity)
-add_subdirectory(schrodinger)
-add_subdirectory(structure_factor)

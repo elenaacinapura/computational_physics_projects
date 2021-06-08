@@ -19,11 +19,11 @@ target_compile_options(transmission PRIVATE -O3 -march=native -ffast-math)
 
 target_link_libraries(transmission compphy-lib)
 
-add_custom_target(run-tunneling-transmission
-    COMMAND transmission
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_TR.gp
+DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_target(run-tunneling
+    COMMAND transmission && gnuplot plot_TR.gp
     DEPENDS transmission
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/plot_TR.gp
-DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

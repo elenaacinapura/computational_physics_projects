@@ -4,14 +4,14 @@ target_compile_options(sir PRIVATE -O3 -march=native)
 
 target_link_libraries(sir compphy-lib gsl)
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sir.py
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 add_custom_target(run-sir
-    COMMAND sir
+    COMMAND sir && python sir.py 2>&1 | grep -v 'libGL'
     DEPENDS sir
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sir.py
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(plot-sir
     COMMAND python sir.py 2>&1 | grep -v 'libGL'

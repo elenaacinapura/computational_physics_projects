@@ -18,3 +18,4 @@ plot "energies.csv" using 1:4 title 'Totale'      w lines lc 39 lw 2,\
      "energies.csv" using 1:2 title 'Cinetica'    w lines lc 6 ,\
      "energies.csv" using 1:3 title 'Potenziale'  w lines lc 3,\
 
+pause -1

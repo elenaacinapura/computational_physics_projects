@@ -14,3 +14,5 @@ plt.title('Universal scale factor')
 plt.xlabel('t')
 plt.ylabel('a(t)')
 plt.show()
+
+print(" ")
