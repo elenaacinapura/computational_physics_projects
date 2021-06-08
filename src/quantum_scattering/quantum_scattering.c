@@ -9,6 +9,9 @@
 #include "util.h"
 
 int main() {
+	printf("============================================================\n");
+	printf("QUANTUM 3D SCATTERING\n");
+
 	/* 	Potential type: 
 		0 for hard sphere
 		1 for lennard-jones
@@ -24,22 +27,29 @@ int main() {
 
 	double xi, E_start, E_end, dE, E;
 	if (potential_type == 0) {
+		printf("HARD-SPHERE POTENTIAL\n");
 		xi = 1.0;
 		dE = 0.01;
 		E_start = 0.001;
 		E_end = 10.0;
-	} else if (potential_type = 1){
-		xi = (2.0*m*s*s*eps/(pow(hbar, 2))); /* xi = (2 m a^2 V0) / h^2 */
-		E_start = 0.05*1.6e-22 / eps;
-		E_end = 5.0*1.6e-22 / eps;
-		dE = 0.05*1.6e-22 / eps;
-
+	} else if (potential_type == 1) {
+		printf("LENNARD-JONES POTENTIAL\n");
+		xi = (2.0 * m * s * s * eps / (pow(hbar, 2))); /* xi = (2 m a^2 V0) / h^2 */
+		E_start = 0.05 * 1.6e-22 / eps;
+		E_end = 5.0 * 1.6e-22 / eps;
+		dE = 0.05 * 1.6e-22 / eps;
 	}
+	printf("============================================================\n");
 
 	/* How far I will go */
 	double L = 50.0;
 	double dx = 0.005;
 	int dim = (int)(L / dx);
+
+	printf("Parameters:\n");
+	printf("	L = %.1lf\n", L);
+	printf("	dx = %.3lf\n", dx);
+	printf("	xi = (2 m a^2 V0) / h^2 = %.3lf\n", xi);
 	/* Arrays for position ang wave function */
 	double x[dim];
 	double u[dim];
@@ -51,11 +61,11 @@ int main() {
 	file = fopen("sigma_tot.csv", "w");
 	assert(file != NULL);
 
-	while (E <= E_end) {	/* Loop on energies */
+	while (E <= E_end) { /* Loop on energies */
 		double k = sqrt(xi * E);
 		sigma = 0.0;
 
-		for (int l = 0; l < 20; l++) {	/* Loop on l */
+		for (int l = 0; l < 20; l++) { /* Loop on l */
 			/* Set initial conditions*/
 			double x0, u0, u1;
 			if (potential_type == 0) { /* Hard sphere */
@@ -98,13 +108,11 @@ int main() {
 		if (potential_type == 0) {
 			fprint_double(file, E);
 		}
-		fprint_double(file, sigma * s*s / (1e-20));
+		fprint_double(file, sigma * s * s / (1e-20));
 		fprintf(file, "\n");
 
 		E += dE;
-
 	}
 	fclose(file);
-
-	system("gnuplot sigma_tot.gp -p");
+	printf("============================================================\n");
 }

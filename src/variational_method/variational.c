@@ -10,6 +10,10 @@
 #include "util.h"
 
 int main() {
+	printf("=====================================================\n");
+	printf("FINDING BOUND STATES WITH VARIATIONAL METHOD\n");
+	printf("=====================================================\n");
+
 	double E;
 	Params p;
 	double xi[] = {0.025, 0.005, 0.0025};
@@ -47,8 +51,9 @@ int main() {
         printf("\nxi = %lf\t a0 = %lf\tE0 = %lf\n", xi[i], a0, energy(a0, &p));
 	}
     printf("\n");
+	printf("=====================================================\n");
 
-	system("gnuplot plot_E.gp -p");
+	// system("gnuplot plot_E.gp -p");
 
 	// gnuplot_ctrl *h;
 	// h = gnuplot_init();

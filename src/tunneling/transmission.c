@@ -88,7 +88,4 @@ int main() {
 
     fclose(file);
 
-
-	system("gnuplot plot_TR.gp -p");
-
 }

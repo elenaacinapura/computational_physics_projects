@@ -24,6 +24,19 @@ int main() {
 	double sampling_duration = 80.0;
 	int sampling_interval = 1000;
 
+	/* welcome */
+	printf("=====================================================\n");
+	printf("MOLECULAR DYNAMICS\n");
+	printf("=====================================================\n");
+	printf("Parameters:\n");
+	printf("	N = %d\n", N);
+	printf("	rho = %.1lf\n", rho);
+	printf("	T = %.1lf\n", T);
+	printf("	Duration of equilibration = %.1lf\n", equilibration_duration);
+	printf("	Sampling duration = %.1lf\n", sampling_duration);
+	printf("=====================================================\n");
+	printf("Simulating molecular dynamics\n");
+
 	/* variables for data sampling */
 	int M = 0;
 	double U_sample = 0.0;
@@ -67,6 +80,8 @@ int main() {
 	 *-----------------------------------------------------------
 	 */
 	do {
+		printf("\rt = %.3lf", t);
+		fflush(stdout);
 		/* advance in trajectory */
 		verlet_step();
 
@@ -118,6 +133,8 @@ int main() {
 		count++;
 	} while (t < equilibration_duration + sampling_duration);
 
+	printf("\n=====================================================\n");
+	printf("Calculating averages\n");
 	/*-----------------------------------------------------------
 	 * Calculations
 	 *-----------------------------------------------------------
@@ -159,6 +176,7 @@ int main() {
 	printf("----------------------------------------------\n");
 	printf("Average U = %lf\nAverage K = %lf\nAverage T = %lf\nAverage P = %lf\nP with integral = %lf\n\n\n", U_sample, K_sample, T_sample, P_sample, P_int);
 
+	printf("Calculations ended!\n");
 
 	// gnuplot_ctrl *h;
 	// h = gnuplot_init();

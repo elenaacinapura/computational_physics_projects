@@ -9,11 +9,11 @@
 int main() {
 	/*========================= WELCOME ========================*/
 	printf("=================================================\n");
-	printf("A model for the Sun\n");
+	printf("A MODEL FOR THE SUN\n");
 	printf("=================================================\n");
-	printf("\nCalculating...\n\n");
+	printf("Calculating...\n\n");
 	/*========================= PARAMETERS ========================*/
-	double G = 6.67e-11; // N * m^2 * kg^-2
+	double G = 6.67e-11;   // N * m^2 * kg^-2
 	double rho = 1.622e5;  // kg * m^-3
 	double R = 7e8;		   // m
 	double M = 2e30;	   // kg
@@ -52,11 +52,11 @@ int main() {
 		double integ = integral(xi_0, dxi, &xi, &theta, &p);
 		rho_estimated = pow(xi_0, 3) / (4.0 * M_PI * integ);
 	} while (fabs(rho_estimated - rho_star) > 0.01);
-    double alpha = R / xi_0;
-    double K = alpha * alpha * 4.0 * M_PI * G / ((n + 1.0) * pow(rho, 1.0/n - 1.0));
-    double P = K * pow(rho, (n + 1.0)/n);
-	printf("Calculations ended successfully!\n\n");
-	printf("Result of the calculations: \n\t n = %.3lf\n\t P = %lf billion bar\n", n, P/1e14);
+	double alpha = R / xi_0;
+	double K = alpha * alpha * 4.0 * M_PI * G / ((n + 1.0) * pow(rho, 1.0 / n - 1.0));
+	double P = K * pow(rho, (n + 1.0) / n);
+	printf("Calculations ended successfully!\n");
 	printf("=================================================\n");
-
+	printf("Result of the calculations: \n\t n = %.3lf\n\t P = %lf billion bar\n", n, P / 1e14);
+	printf("=================================================\n");
 }

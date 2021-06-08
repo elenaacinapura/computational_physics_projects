@@ -6,9 +6,9 @@
 
 /*======================= CONSTANTS ========================*/
 const int N = 4096;
-const double L = 500.0;
-const int num_T = 5000;
-const double E = 0.5;
+const double L = 400.0;
+const int num_T = 500;
+const double E = 1.0;
 double alpha = 0.025;
 
 /*======================= FUNCTIONS HEADERS ========================*/
@@ -33,7 +33,7 @@ int main() {
 	double complex xi[N];
 	double phi[2 * N];
 
-	double dt = 0.1 / sqrt(E);
+	double dt = 1.0 / sqrt(E);
 	double k_E = sqrt(E / alpha);
 
 	double norm_start, norm_R, norm_T;
@@ -66,9 +66,10 @@ int main() {
 	assert(file != NULL);
 	fprintf(file, "x\tf\n");
 
-	int cnt = 0;
+	int cnt = -1;
 	double t = 0.0 - dt;
 	while (cnt < num_T) {
+		printf("\rTimestep = %d", cnt);
 		t += dt;
 		cnt++;
 		/* Print */
@@ -94,6 +95,9 @@ int main() {
 		}
 		/* Antitransform */
 		gsl_fft_complex_radix2_inverse(phi, 1, N);
+		if (fabs(phi[2*N - 2]) > 1e-2) {
+			break;
+		}
 	}
 	fclose(file);
 	/* ============================= End of evolution ===============================*/
@@ -123,8 +127,8 @@ int main() {
 
 /*======================= FUNCTIONS ========================*/
 complex double f0(double x, double k) {
-	double sigma = 70.0 / k;
-	double x0 = L / 2.0 - 4.0 * sigma;
+	double sigma = 40.0 / k;
+	double x0 = L / 2.0 - 5.0 * sigma;
 	assert(x0 > 0.0);
 	return exp(-(x - x0) * (x - x0) / pow(sigma, 2)) * cexp(I * k * (x - x0));
 }

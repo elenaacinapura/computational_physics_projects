@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
 #============= DATA =============
 data = pd.read_csv('solution.csv', delimiter='\t')
 r = data.iloc[:, 0]

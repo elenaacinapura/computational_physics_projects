@@ -11,14 +11,14 @@
 /*======================= CONSTANTS ========================*/
 const int N = 4096;
 const double R = 8.0;
-const double rho_target = 0.7;
+const double rho_target = 0.2;
 const double T = 1.35;
 const double alpha = 0.01;			 /* adjusting parameter */
 const double alpha_potential = 20.0; /* parameter in the potential */
 
 /*======================= FUNCTION HEADERS ========================*/
 double potential(double r);
-double deriv_potential (double r);
+double deriv_potential(double r);
 double h0(double r);
 double init(double r[], double h[], double c[]);
 double Dist(double h_new[], double h_old[]);
@@ -33,7 +33,9 @@ int main() {
 	printf("============================================================\n");
 	printf("Parameters of the simulation:\n");
 	printf("\tN = %d\n\tR = %.1lf\n\tT = %.2lf\n\tRho target = %.1lf\n\tAlpha = %.2lf (aka \"gentleness\")\n", N, R, T, rho_target, alpha);
-	printf("\nCalculating...\n");
+	printf("============================================================\n");
+
+	printf("Calculating...\n");
 	/*======================= PERCUS-YEVICK METHOD ========================*/
 	/* My vectors */
 	double r[N];
@@ -50,7 +52,7 @@ int main() {
 	init(r, h, c);
 	double rho = rho_start;
 	printf("Current value of rho = %.3lf", rho);
-	while (rho <= rho_target + 0.1*d_rho) { 	/* some times rho=rho_target fails just for binary representation*/
+	while (rho <= rho_target + 0.1 * d_rho) { /* some times rho=rho_target fails just for binary representation*/
 		printf("\rCurrent value of rho = %.3lf", rho);
 		fflush(stdout);
 		do {
@@ -93,7 +95,7 @@ int main() {
 		} while (norm > 1e-6);
 		rho += d_rho;
 	}
-	printf("\nCalculations ended successfully!\n\n");
+	printf("\n============================================================\n");
 	/*======================= PRESSURE AND INTERNAL ENERGY ========================*/
 	double g[N];
 	double P, U;

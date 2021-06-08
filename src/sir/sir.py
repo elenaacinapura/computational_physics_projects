@@ -3,7 +3,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 plt.rc('text', usetex=True)
-plt.rc('font', family='serif', size=18)
+plt.rc('font', family='serif')
 
 data = pd.read_csv('sir.csv', delimiter='\t')
 t = data['t'].to_numpy()

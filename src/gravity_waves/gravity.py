@@ -34,3 +34,5 @@ def animate (i):
 
 a = animation.FuncAnimation(fig, animate, frames=np.arange(int(T/dt)), interval=10)
 plt.show()
+
+print(" ")

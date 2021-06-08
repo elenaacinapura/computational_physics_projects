@@ -1,14 +1,14 @@
-set term epslatex color colortext
-set output "energies.tex"
-# set term qt
+# set term epslatex color colortext
+# set output "energies.tex"
+set term qt
 
 set datafile separator "\t"
 
-set title "\\textbf{Andamento temporale delle energie}"
+set title "Andamento delle energie"
 set key right bottom
 
-set xlabel "$t^*$"
-set ylabel "$E^*$" offset 1,0 rotate by 0
+set xlabel "t"
+set ylabel "E" offset 1,0 rotate by 0
 
 set label "Fine equilibrazione" font ",5" at 78,10 rotate by 90
 set arrow from 80, graph(0,0) to 80,graph(1,1) nohead

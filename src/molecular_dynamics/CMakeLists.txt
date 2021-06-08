@@ -14,7 +14,11 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/g.gp
 DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(run-molecular-dynamics
-    COMMAND fluid && gnuplot energies.gp && gnuplot T.gp
+    COMMAND fluid && gnuplot energies.gp | gnuplot T.gp
     DEPENDS fluid
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+add_custom_target(plot-molecular-dynamics
+    COMMAND gnuplot energies.gp | gnuplot T.gp
     WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
 )

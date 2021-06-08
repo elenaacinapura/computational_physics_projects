@@ -4,7 +4,7 @@
 #include <math.h>
 #include <print_routines.h>
 
-#define MOVING_FRAME 1
+#define MOVING_FRAME 0
 
 const int N = 512;
 const double L = 100.0;
@@ -29,8 +29,15 @@ int main() {
 	double dk = 2.0 * M_PI / L;
 
 	/* Welcome */
-	printf("\n***************************************************\n");
-	printf("A wave package in a gravitational field\n\nCalculating...\n\n");
+	printf("==========================================================\n");
+	printf("A WAVE PACKET IN A GRAVITATIONAL FIELD\n");
+	printf("==========================================================\n");
+	printf("Parameters:\n");
+	printf("	N = %d\n", N);
+	printf("	L = %.1lf\n", L);
+	printf("	dt = %.2lf\n", dt);
+	printf("==========================================================\n");
+	printf("Calculating...\n\n");
 
 	/* Print parameters to file */
 	FILE *f_par;
@@ -112,7 +119,7 @@ int main() {
 	fclose(file);
 	printf("Simulation ended successfully.\n\n");
 	printf("Results:\nk_max = %lf\nGroup velocity = %lf\n", k_max, v);
-	printf("\n***************************************************\n");
+	printf("==========================================================\n");
 }
 
 /***********************************************

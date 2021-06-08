@@ -8,6 +8,9 @@
 
 
 int main() {
+	printf("=============================================\n");
+	printf("THE AGE OF THE UNIVERSE\n");
+	printf("=============================================\n");
 	/* Parameters */
 	double omega_0 = 0.27;
 	double omega_l = 0.73;
@@ -28,7 +31,7 @@ int main() {
 	double t_end = -3.0;
 	double a0 = 1.0;
 	double a = a0;
-    double t_a0;
+    // double t_a0;
 
 	while (t > t_end) {
 		fprintf(f, "%lf\t", t);
@@ -36,16 +39,17 @@ int main() {
         double a_old = a;
 		a = RK4(a, t, -dt, F_universe, &p);
         if (a_old >= 0.5 && a <= 0.5) {
-            printf("\nt_1/2 = %lf\n", t);
+            printf("t_1/2 = %lf\n", t);
         }
         if (a == 0.0 || !isfinite(a)) {
             printf("a(t) = 0 for reduced t = %lf\n", t);
-            t_a0 = t;
+            // t_a0 = t;
             double age = -t*inv_H0 / (3600*24*365);
-            printf("The age of the universe is %e years\n\n", age);
+            printf("The age of the universe is %e years\n", age);
             break;
         }
 		t -= dt;
 	}
 	fclose(f);
+	printf("=============================================\n");
 }
